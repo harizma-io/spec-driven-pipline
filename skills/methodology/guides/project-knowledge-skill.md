@@ -8,7 +8,7 @@ project-knowledge skill в `.claude/skills/project-knowledge/` хранит вс
 ```
 .claude/skills/project-knowledge/
 ├── SKILL.md          # Skill manifest with activation description
-└── guides/           # 9 documentation guides
+└── references/       # 9 documentation references
     ├── project.md
     ├── architecture.md
     ├── patterns.md
@@ -351,4 +351,4 @@ Guides обновляются:
 ### Skill не активируется
 - Проверь что SKILL.md существует
 - Проверь что description в SKILL.md соответствует use case
-- Можно явно прочитать guide: `Read .claude/skills/project-knowledge/guides/architecture.md`
+- Можно явно прочитать guide: `Read .claude/skills/project-knowledge/references/architecture.md`

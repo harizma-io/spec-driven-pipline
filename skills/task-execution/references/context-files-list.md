@@ -8,9 +8,9 @@ Read these for every task:
 
 | File | Purpose |
 |------|---------|
-| `.claude/skills/project-knowledge/guides/architecture.md` | System architecture, components |
-| `.claude/skills/project-knowledge/guides/patterns.md` | Code patterns, conventions |
-| `.claude/skills/project-knowledge/guides/project.md` | Project overview, stack |
+| `.claude/skills/project-knowledge/references/architecture.md` | System architecture, components |
+| `.claude/skills/project-knowledge/references/patterns.md` | Code patterns, conventions |
+| `.claude/skills/project-knowledge/references/project.md` | Project overview, stack |
 | `work/{feature}/user-spec.md` | Business requirements |
 | `work/{feature}/tech-spec.md` | Technical decisions |
 
@@ -21,19 +21,19 @@ Always read files listed in task's "Context Files" section.
 ## Conditional by Task Type
 
 ### Database/Schema/Model Tasks
-- `.claude/skills/project-knowledge/guides/database.md`
+- `.claude/skills/project-knowledge/references/database.md`
 
 ### API/Endpoint/Route Tasks
-- `.claude/skills/project-knowledge/guides/api.md`
+- `.claude/skills/project-knowledge/references/api.md`
 
 ### Deployment/Infrastructure Tasks
-- `.claude/skills/project-knowledge/guides/deployment.md`
+- `.claude/skills/project-knowledge/references/deployment.md`
 
 ### Git/CI-CD Tasks
-- `.claude/skills/project-knowledge/guides/git-workflow.md`
+- `.claude/skills/project-knowledge/references/git-workflow.md`
 
 ### UI/Text/Design Tasks
-- `.claude/skills/project-knowledge/guides/ux-guidelines.md`
+- `.claude/skills/project-knowledge/references/ux-guidelines.md`
 
 ## Testing Guides
 

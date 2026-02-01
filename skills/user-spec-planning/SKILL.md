@@ -85,8 +85,8 @@ If file exists:
 
 Before asking questions, understand the project:
 ```bash
-Read: .claude/skills/project-knowledge/guides/project.md
-Read: .claude/skills/project-knowledge/guides/architecture.md
+Read: .claude/skills/project-knowledge/references/project.md
+Read: .claude/skills/project-knowledge/references/architecture.md
 ```
 
 **Do NOT read** patterns.md (that's for implementation, not planning).
@@ -341,8 +341,8 @@ Use Task tool with subagent_type="general-purpose":
 
 Read these files:
 - work/{feature-name}/user-spec.md
-- .claude/skills/project-knowledge/guides/project.md (if exists)
-- .claude/skills/project-knowledge/guides/architecture.md (if exists)
+- .claude/skills/project-knowledge/references/project.md (if exists)
+- .claude/skills/project-knowledge/references/architecture.md (if exists)
 
 Validate against these criteria:
 

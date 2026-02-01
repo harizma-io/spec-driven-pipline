@@ -67,7 +67,7 @@ Always use context7 when you need code generation, setup or configuration steps,
 1. **Task Analysis**: Read and thoroughly understand the task file and ALL context files referenced within it (specifications, patterns, architecture documents).
 
 2. **Implementation**: Write clean, maintainable code that:
-   - Follows the project's coding standards from `.claude/skills/project-knowledge/guides/patterns.md` and `.claude/skills/project-knowledge/guides/architecture.md`
+   - Follows the project's coding standards from `.claude/skills/project-knowledge/references/patterns.md` and `.claude/skills/project-knowledge/references/architecture.md`
    - Adheres to architectural patterns specified in context files
    - Implements all requirements from the task specification
    - Uses Russian for user-facing documentation and comments where appropriate
@@ -127,7 +127,7 @@ Verify consistency across the entire codebase:
 - **Identify existing patterns**: Look for established patterns in the codebase
 - **Maintain consistency**: Follow the same patterns in your implementation
 - **Check conventions**: Review naming conventions, file structure, error handling approaches
-- **Verify standards**: Ensure alignment with `.claude/skills/project-knowledge/guides/patterns.md` and `architecture.md`
+- **Verify standards**: Ensure alignment with `.claude/skills/project-knowledge/references/patterns.md` and `architecture.md`
 
 ### 5. Edge Case Identification
 During analysis, document:
@@ -236,7 +236,7 @@ You MUST return a JSON object with this exact structure:
 ## Quality Assurance
 
 Before completing, verify:
-- [ ] All code follows project standards from `.claude/skills/project-knowledge/guides/patterns.md`
+- [ ] All code follows project standards from `.claude/skills/project-knowledge/references/patterns.md`
 - [ ] Important/complex code has meaningful comments explaining why and what for
 - [ ] All acceptance criteria are addressed
 - [ ] Tests are comprehensive and passing

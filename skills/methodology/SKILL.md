@@ -71,10 +71,10 @@ Agent reads only necessary information for current task, not entire context.
 Each piece of information stored in one place, others reference it.
 
 **Examples:**
-- Project description → `.claude/skills/project-knowledge/guides/project.md`
-- Tech stack → `.claude/skills/project-knowledge/guides/architecture.md`
-- Database schema → `.claude/skills/project-knowledge/guides/database.md`
-- Deployment config → `.claude/skills/project-knowledge/guides/deployment.md`
+- Project description → `.claude/skills/project-knowledge/references/project.md`
+- Tech stack → `.claude/skills/project-knowledge/references/architecture.md`
+- Database schema → `.claude/skills/project-knowledge/references/database.md`
+- Deployment config → `.claude/skills/project-knowledge/references/deployment.md`
 
 **Benefits:**
 - No duplication
@@ -235,7 +235,7 @@ Created via `/init-project` or `/old-project`.
 
 ```
 my-project/
-├── .claude/skills/project-knowledge/guides/              # 7 context files
+├── .claude/skills/project-knowledge/references/              # 7 context files
 │   ├── project.md                # Project description
 │   ├── architecture.md           # Tech stack
 │   ├── database.md               # Database config
@@ -350,7 +350,7 @@ Location: `~/.claude/shared/templates/old-folder-audit.md`
 2. Agent uses Context7 to fetch latest docs
 3. Agent implements using current best practices
 
-**Setup:** Mention Context7 availability in `.claude/skills/project-knowledge/guides/architecture.md`:
+**Setup:** Mention Context7 availability in `.claude/skills/project-knowledge/references/architecture.md`:
 ```markdown
 ## Documentation Access
 - Context7 MCP server available for real-time documentation

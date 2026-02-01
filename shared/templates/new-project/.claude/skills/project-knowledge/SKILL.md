@@ -20,19 +20,19 @@ Activate this skill when you need to:
 
 ## Available guides
 
-All documentation is in the `guides/` folder:
+All documentation is in the `references/` folder:
 
-- **[project.md](guides/project.md)** - Project overview, purpose, target audience, core features, scope boundaries
-- **[features.md](guides/features.md)** - Complete feature inventory with priorities, dependencies, and status
-- **[roadmap.md](guides/roadmap.md)** - Development phases, milestones, timeline, and migration plan (if applicable)
-- **[architecture.md](guides/architecture.md)** - Tech stack, project structure, dependencies, external integrations, data flow
-- **[patterns.md](guides/patterns.md)** - Coding standards, naming conventions, code organization, error handling, security practices, testing patterns
-- **[database.md](guides/database.md)** - Database type, main tables/collections, constraints, migration strategy, naming conventions, sensitive data handling
-- **[deployment.md](guides/deployment.md)** - Deployment platform, SSH access, environment variables, deployment triggers, rollback procedures, environments
-- **[git-workflow.md](guides/git-workflow.md)** - Branch structure, branch decision criteria, testing strategy before merge, security gates, PR process
-- **[ux-guidelines.md](guides/ux-guidelines.md)** - Interface language, tone of voice, domain glossary, text patterns, design system, accessibility requirements
-- **[monitoring.md](guides/monitoring.md)** - Logging, error tracking, metrics, health checks, alerting for production monitoring
-- **[business-rules.md](guides/business-rules.md)** - Domain workflows, validation rules, calculations, state machines (optional - delete if not needed)
+- **[project.md](references/project.md)** - Project overview, purpose, target audience, core features, scope boundaries
+- **[features.md](references/features.md)** - Complete feature inventory with priorities, dependencies, and status
+- **[roadmap.md](references/roadmap.md)** - Development phases, milestones, timeline, and migration plan (if applicable)
+- **[architecture.md](references/architecture.md)** - Tech stack, project structure, dependencies, external integrations, data flow
+- **[patterns.md](references/patterns.md)** - Coding standards, naming conventions, code organization, error handling, security practices, testing patterns
+- **[database.md](references/database.md)** - Database type, main tables/collections, constraints, migration strategy, naming conventions, sensitive data handling
+- **[deployment.md](references/deployment.md)** - Deployment platform, SSH access, environment variables, deployment triggers, rollback procedures, environments
+- **[git-workflow.md](references/git-workflow.md)** - Branch structure, branch decision criteria, testing strategy before merge, security gates, PR process
+- **[ux-guidelines.md](references/ux-guidelines.md)** - Interface language, tone of voice, domain glossary, text patterns, design system, accessibility requirements
+- **[monitoring.md](references/monitoring.md)** - Logging, error tracking, metrics, health checks, alerting for production monitoring
+- **[business-rules.md](references/business-rules.md)** - Domain workflows, validation rules, calculations, state machines (optional - delete if not needed)
 
 ## How to use
 

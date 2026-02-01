@@ -315,9 +315,9 @@ notes: |
 #       - Set timestamp_created
 #       - **SAVE plan**
 #    b) **Show files to user with clickable links**:
-#       - [project.md](.claude/skills/project-knowledge/guides/project.md)
-#       - [features.md](.claude/skills/project-knowledge/guides/features.md)
-#       - [roadmap.md](.claude/skills/project-knowledge/guides/roadmap.md)
+#       - [project.md](.claude/skills/project-knowledge/references/project.md)
+#       - [features.md](.claude/skills/project-knowledge/references/features.md)
+#       - [roadmap.md](.claude/skills/project-knowledge/references/roadmap.md)
 #       - Ask: "Посмотри, пожалуйста. Всё правильно? Есть что изменить?"
 #    c) **Update plan - user_review**:
 #       - Set status: "awaiting_feedback"

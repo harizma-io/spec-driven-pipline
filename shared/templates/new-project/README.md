@@ -1,7 +1,7 @@
 # [Название проекта]
 
 > **Это README для владельца проекта**, а не для AI-агентов.
-> Инструкции для агентов находятся в CLAUDE.md и .claude/skills/project-knowledge/guides/
+> Инструкции для агентов находятся в CLAUDE.md и .claude/skills/project-knowledge/references/
 
 ## О проекте
 

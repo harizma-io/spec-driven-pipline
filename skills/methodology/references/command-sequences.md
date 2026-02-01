@@ -209,7 +209,7 @@
 - Directory not empty (warns)
 
 **Creates:**
-- `.claude/skills/project-knowledge/guides/` - 7 context file templates
+- `.claude/skills/project-knowledge/references/` - 7 context file templates
 - `work/` - work items folder
 - `work/templates/` - spec templates
 - `.gitignore` - security-focused
@@ -253,7 +253,7 @@
 
 **Process:**
 1. Adaptive interview (3-15 questions)
-2. Creates `.claude/skills/project-knowledge/guides/project.md`
+2. Creates `.claude/skills/project-knowledge/references/project.md`
 3. User reviews and approves
 4. Agent iterates if needed
 5. Git commit
@@ -586,7 +586,7 @@
 ### Quick project start (no interview):
 ```bash
 /init-project && /init-git
-# Then manually edit .claude/skills/project-knowledge/guides/ files
+# Then manually edit .claude/skills/project-knowledge/references/ files
 ```
 
 ### Skip framework init (API projects):

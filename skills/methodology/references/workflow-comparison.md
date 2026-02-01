@@ -299,7 +299,7 @@
    - **No** → New Project
    - **Yes** → Go to question 2
 
-2. ☐ Does the project have `.claude/skills/project-knowledge/guides/` with 7 files?
+2. ☐ Does the project have `.claude/skills/project-knowledge/references/` with 7 files?
    - **No** → Onboarding
    - **Yes** → Go to question 3
 

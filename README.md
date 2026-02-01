@@ -42,7 +42,7 @@ Skills — модульные пакеты знаний, которые авто
 
 ### documentation
 
-**Управление документацией проекта.** Помогает создавать, проверять и обновлять 11 файлов в `.claude/skills/project-knowledge/guides/`. Проводит аудит на bloat (лишний код в доках, очевидная информация). Вызывается при "заполни документацию" или "проверь доки".
+**Управление документацией проекта.** Помогает создавать, проверять и обновлять 11 файлов в `.claude/skills/project-knowledge/references/`. Проводит аудит на bloat (лишний код в доках, очевидная информация). Вызывается при "заполни документацию" или "проверь доки".
 
 ### project-planning
 
@@ -164,7 +164,7 @@ Slash-команды для автоматизации рутинных зада
 
 ```
 my-project/
-├── .claude/skills/project-knowledge/guides/
+├── .claude/skills/project-knowledge/references/
 │   ├── project.md          # Описание проекта
 │   ├── architecture.md     # Tech stack
 │   ├── database.md         # База данных

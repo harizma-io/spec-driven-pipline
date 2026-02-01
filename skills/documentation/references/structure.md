@@ -1,6 +1,6 @@
 # Documentation Structure Reference
 
-This file describes the 11 core documentation files in `.claude/skills/project-knowledge/guides/`, their purpose, sections, and what information belongs in each.
+This file describes the 11 core documentation files in `.claude/skills/project-knowledge/references/`, their purpose, sections, and what information belongs in each.
 
 ## 1. project.md
 
@@ -177,7 +177,7 @@ This file describes the 11 core documentation files in `.claude/skills/project-k
 This file has TWO distinct sections:
 
 ### Universal Patterns (from template)
-- **Source:** Comes from `~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/patterns.md`
+- **Source:** Comes from `~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/patterns.md`
 - **Purpose:** Common best practices shared across all projects for consistent code quality
 - **Content:** Naming conventions, code organization, error handling, security, testing, code quality guidelines
 - **Important:** This section is intentionally generic and should NOT be removed or modified

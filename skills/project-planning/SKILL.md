@@ -55,7 +55,7 @@ You're conducting a planning interview to understand how to break down the proje
 ### Phase 1: Gather Project Overview
 
 **Verify environment:**
-- Check if `.claude/skills/project-knowledge/guides/project.md` exists (template)
+- Check if `.claude/skills/project-knowledge/references/project.md` exists (template)
 - If missing, tell user to run `/init-project` first
 
 **Check for existing interview (Resume functionality):**
@@ -287,19 +287,19 @@ Open the interview plan file from `.claude/tmp/interview-plan-*.yml` and use it 
 **If documentation files don't exist** (old project):
 Copy from template:
 ```bash
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/project.md .claude/skills/project-knowledge/guides/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/features.md .claude/skills/project-knowledge/guides/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/roadmap.md .claude/skills/project-knowledge/guides/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/project.md .claude/skills/project-knowledge/references/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/features.md .claude/skills/project-knowledge/references/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/roadmap.md .claude/skills/project-knowledge/references/
 ```
 
 **Fill project.md:**
-- File: `.claude/skills/project-knowledge/guides/project.md`
+- File: `.claude/skills/project-knowledge/references/project.md`
 - Source: Interview plan Phase 1 (`value` fields)
 - Keep it high-level (3-5 key features only from `key_features_highlevel`)
 - Content in English (except Cyrillic project names)
 
 **Fill features.md:**
-- File: `.claude/skills/project-knowledge/guides/features.md`
+- File: `.claude/skills/project-knowledge/references/features.md`
 - Source: Interview plan Phase 2 (`value` fields)
 - List ALL features from `feature_list`
 - Include priorities from `feature_priorities`
@@ -308,7 +308,7 @@ cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guide
 - Group features logically if many
 
 **Fill roadmap.md:**
-- File: `.claude/skills/project-knowledge/guides/roadmap.md`
+- File: `.claude/skills/project-knowledge/references/roadmap.md`
 - Source: Interview plan Phase 3 (`value` fields)
 - If simple project (`development_approach` = all at once): minimal roadmap or mostly empty
 - If phased: detailed phases from `phasing_strategy` and milestones from `milestones`
@@ -358,9 +358,9 @@ Tell user (in Russian):
 
 "Готово! Я заполнил все три файла планирования:
 
-- [project.md](.claude/skills/project-knowledge/guides/project.md) - Описание проекта
-- [features.md](.claude/skills/project-knowledge/guides/features.md) - Список фич с приоритетами
-- [roadmap.md](.claude/skills/project-knowledge/guides/roadmap.md) - План разработки
+- [project.md](.claude/skills/project-knowledge/references/project.md) - Описание проекта
+- [features.md](.claude/skills/project-knowledge/references/features.md) - Список фич с приоритетами
+- [roadmap.md](.claude/skills/project-knowledge/references/roadmap.md) - План разработки
 
 Посмотри, пожалуйста. Всё правильно? Есть что изменить?"
 

@@ -38,8 +38,8 @@ Monolithic CLAUDE.md (10,000 строк)
 2. code-developer читает:
    - `work/feature-name/tasks/1.md` (task description)
    - `work/feature-name/tech-spec.md` (technical approach)
-   - `.claude/skills/project-knowledge/guides/architecture.md` (tech stack)
-   - `.claude/skills/project-knowledge/guides/patterns.md` (code conventions)
+   - `.claude/skills/project-knowledge/references/architecture.md` (tech stack)
+   - `.claude/skills/project-knowledge/references/patterns.md` (code conventions)
 3. НЕ читает:
    - project.md (не нужен для конкретной задачи)
    - database.md (если задача не про БД)
@@ -113,11 +113,11 @@ Monolithic CLAUDE.md (10,000 строк)
 - UX guidelines → `ux-guidelines.md`
 - Project description → `project.md`
 
-All guides live in `.claude/skills/project-knowledge/guides/` and are accessed through the project-knowledge skill.
+All guides live in `.claude/skills/project-knowledge/references/` and are accessed through the project-knowledge skill.
 
 ### Как работает
 1. Агент нужна информация о tech stack
-2. Читает `.claude/skills/project-knowledge/guides/architecture.md` (и только его)
+2. Читает `.claude/skills/project-knowledge/references/architecture.md` (и только его)
 3. Не ищет в README, package.json, comments
 4. Single Source of Truth гарантирует актуальность
 
@@ -133,7 +133,7 @@ CLAUDE.md: "Frontend: React 19"
 
 **Хорошо:**
 ```
-.claude/skills/project-knowledge/guides/architecture.md:
+.claude/skills/project-knowledge/references/architecture.md:
 ## Frontend
 - Framework: React 18.2.0
 - State Management: Zustand
@@ -147,7 +147,7 @@ CLAUDE.md: "Frontend: React 19"
 
 ```markdown
 # README.md
-For complete tech stack, see [.claude/skills/project-knowledge/guides/architecture.md](.claude/skills/project-knowledge/guides/architecture.md)
+For complete tech stack, see [.claude/skills/project-knowledge/references/architecture.md](.claude/skills/project-knowledge/references/architecture.md)
 
 # deployment.md
 Database configuration: see [database.md](database.md)
@@ -444,7 +444,7 @@ Main Agent:
 
 ### Решение
 Все документы в Git:
-- Project knowledge skill guides в `.claude/skills/project-knowledge/guides/`
+- Project knowledge skill guides в `.claude/skills/project-knowledge/references/`
 - Work items в `work/`
 - Templates в `shared/templates/`
 - История через `git log`
@@ -475,12 +475,12 @@ dist/                      # Build artifacts
 
 **Review changes:**
 ```bash
-git diff .claude/skills/project-knowledge/guides/architecture.md
+git diff .claude/skills/project-knowledge/references/architecture.md
 ```
 
 **See history:**
 ```bash
-git log --follow .claude/skills/project-knowledge/guides/architecture.md
+git log --follow .claude/skills/project-knowledge/references/architecture.md
 ```
 
 **Rollback:**

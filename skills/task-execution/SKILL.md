@@ -41,9 +41,9 @@ Before writing any code:
    See [references/context-files-list.md](references/context-files-list.md) for full list.
 
    Always read:
-   - `.claude/skills/project-knowledge/guides/architecture.md`
-   - `.claude/skills/project-knowledge/guides/patterns.md`
-   - `.claude/skills/project-knowledge/guides/project.md`
+   - `.claude/skills/project-knowledge/references/architecture.md`
+   - `.claude/skills/project-knowledge/references/patterns.md`
+   - `.claude/skills/project-knowledge/references/project.md`
    - `work/{feature}/user-spec.md`
    - `work/{feature}/tech-spec.md`
 

@@ -29,10 +29,10 @@ This skill provides comprehensive guidance for setting up development infrastruc
 ## Prerequisites
 
 Before starting infrastructure setup, ensure these context files exist:
-- `.claude/skills/project-knowledge/guides/architecture.md` - tech stack and framework choice
-- `.claude/skills/project-knowledge/guides/patterns.md` - code patterns and conventions
-- `.claude/skills/project-knowledge/guides/deployment.md` - deployment strategy
-- `.claude/skills/project-knowledge/guides/git-workflow.md` - git branching strategy
+- `.claude/skills/project-knowledge/references/architecture.md` - tech stack and framework choice
+- `.claude/skills/project-knowledge/references/patterns.md` - code patterns and conventions
+- `.claude/skills/project-knowledge/references/deployment.md` - deployment strategy
+- `.claude/skills/project-knowledge/references/git-workflow.md` - git branching strategy
 - GitHub repository exists with remote configured
 
 ---

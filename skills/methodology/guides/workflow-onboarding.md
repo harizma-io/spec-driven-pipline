@@ -138,7 +138,7 @@ git push
 
 - [ ] Legacy код сохранен в `old/` и не потерян
 - [ ] `old-folder-audit.md` заполнен (в корне проекта)
-- [ ] `.claude/skills/project-knowledge/guides/` заполнен (5 файлов: project, architecture, database, deployment, ux-guidelines)
+- [ ] `.claude/skills/project-knowledge/references/` заполнен (5 файлов: project, architecture, database, deployment, ux-guidelines)
 - [ ] `patterns.md` и `git-workflow.md` остаются шаблонными
 - [ ] `CLAUDE.md` актуален
 - [ ] CI/CD pipeline настроен

@@ -105,7 +105,7 @@
 ## Success Checklist
 
 - [ ] GitHub репозиторий создан и доступен
-- [ ] `.claude/skills/project-knowledge/guides/` полностью заполнен (7 файлов)
+- [ ] `.claude/skills/project-knowledge/references/` полностью заполнен (7 файлов)
 - [ ] `CLAUDE.md` актуален
 - [ ] Framework работает локально
 - [ ] CI/CD pipeline проходит (первый commit успешен)

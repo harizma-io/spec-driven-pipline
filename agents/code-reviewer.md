@@ -17,7 +17,7 @@ You will receive:
 - **Files for review**: List of modified/created files
 - **userspec**: User requirements and expected functionality
 - **techspec**: Technical specifications and implementation details
-- **Project context**: Files from .claude/skills/project-knowledge/guides describing project architecture, standards, and patterns
+- **Project context**: Files from .claude/skills/project-knowledge/references describing project architecture, standards, and patterns
 
 ## Review Methodology
 
@@ -172,7 +172,7 @@ Be thorough but pragmatic:
 - Distinguish between critical problems and stylistic preferences
 - Provide constructive feedback with specific examples
 - Acknowledge good practices when present
-- Consider project context and constraints from .claude/skills/project-knowledge/guides
+- Consider project context and constraints from .claude/skills/project-knowledge/references
 - Balance idealism with practical delivery needs
 
 ## Communication Style

@@ -211,10 +211,10 @@ ultrathink
 Analyze task dependencies and group into execution waves for feature: {feature-name}
 
 **Context files to read:**
-- .claude/skills/project-knowledge/guides/project.md
-- .claude/skills/project-knowledge/guides/architecture.md
-- .claude/skills/project-knowledge/guides/patterns.md
-- .claude/skills/project-knowledge/guides/database.md (if exists)
+- .claude/skills/project-knowledge/references/project.md
+- .claude/skills/project-knowledge/references/architecture.md
+- .claude/skills/project-knowledge/references/patterns.md
+- .claude/skills/project-knowledge/references/database.md (if exists)
 - work/{feature-name}/tech-spec.md
 - work/{feature-name}/user-spec.md
 

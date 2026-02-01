@@ -11,9 +11,9 @@ This guide explains how to create project.md, features.md, and roadmap.md based 
 **If files don't exist** (old project):
 Copy from template:
 ```bash
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/project.md .claude/skills/project-knowledge/guides/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/features.md .claude/skills/project-knowledge/guides/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/roadmap.md .claude/skills/project-knowledge/guides/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/project.md .claude/skills/project-knowledge/references/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/features.md .claude/skills/project-knowledge/references/
+cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/roadmap.md .claude/skills/project-knowledge/references/
 ```
 
 **For simple projects:**

@@ -91,7 +91,7 @@ AI-first методология разработки для предприним
    - `CLAUDE.md` - глобальные инструкции (влияют на ВСЕ проекты!)
 
 2. **Локальная папка проекта** - конкретный проект
-   - `.claude/skills/project-knowledge/guides/` - 7 context файлов проекта
+   - `.claude/skills/project-knowledge/references/` - 7 context файлов проекта
    - `work/` - фичи/баги с User Spec, Tech Spec, Tasks
    - `CLAUDE.md` - инструкции конкретного проекта
 
@@ -103,7 +103,7 @@ AI-first методология разработки для предприним
 
 ```
 new-project/
-├── .claude/skills/project-knowledge/guides/        # 7 context файлов (templates)
+├── .claude/skills/project-knowledge/references/        # 7 context файлов (templates)
 │   ├── project.md          # Описание проекта
 │   ├── architecture.md     # Tech stack
 │   ├── database.md         # Database config
@@ -162,7 +162,7 @@ Deploy
 - Context7 фетчит актуальные docs с официальных сайтов
 - Agent использует свежую информацию
 
-**Интеграция:** Указывается в `.claude/skills/project-knowledge/guides/architecture.md` (одна строка о доступности)
+**Интеграция:** Указывается в `.claude/skills/project-knowledge/references/architecture.md` (одна строка о доступности)
 
 ## Структура проекта
 
@@ -170,7 +170,7 @@ Deploy
 
 **Документация:**
 - `guides/` - руководства по процессам разработки
-- `.claude/skills/project-knowledge/guides/` - контекст проекта для агентов
+- `.claude/skills/project-knowledge/references/` - контекст проекта для агентов
 - `.claude/rules/` - правила и чеклисты для агентов
 
 **Рабочие файлы:**

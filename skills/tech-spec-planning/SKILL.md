@@ -70,13 +70,13 @@ If user-spec missing, ask user:
 
 Read all 7 core context files:
 ```bash
-Read: .claude/skills/project-knowledge/guides/project.md
-Read: .claude/skills/project-knowledge/guides/architecture.md
-Read: .claude/skills/project-knowledge/guides/patterns.md
-Read: .claude/skills/project-knowledge/guides/testing.md
-Read: .claude/skills/project-knowledge/guides/deployment.md
-Read: .claude/skills/project-knowledge/guides/api.md
-Read: .claude/skills/project-knowledge/guides/conventions.md
+Read: .claude/skills/project-knowledge/references/project.md
+Read: .claude/skills/project-knowledge/references/architecture.md
+Read: .claude/skills/project-knowledge/references/patterns.md
+Read: .claude/skills/project-knowledge/references/testing.md
+Read: .claude/skills/project-knowledge/references/deployment.md
+Read: .claude/skills/project-knowledge/references/api.md
+Read: .claude/skills/project-knowledge/references/conventions.md
 ```
 
 If any files missing, note them and continue (not all projects have all guides).
@@ -205,10 +205,10 @@ Use Task tool with subagent_type="general-purpose":
 Read these files:
 - work/{feature-name}/tech-spec.md
 - work/{feature-name}/user-spec.md (if exists)
-- .claude/skills/project-knowledge/guides/architecture.md
-- .claude/skills/project-knowledge/guides/patterns.md
-- .claude/skills/project-knowledge/guides/database.md (if exists)
-- .claude/skills/project-knowledge/guides/api.md (if exists)
+- .claude/skills/project-knowledge/references/architecture.md
+- .claude/skills/project-knowledge/references/patterns.md
+- .claude/skills/project-knowledge/references/database.md (if exists)
+- .claude/skills/project-knowledge/references/api.md (if exists)
 
 Validate against these criteria:
 
@@ -348,9 +348,9 @@ Use Task tool with subagent_type="general-purpose":
 Read these files for context:
 - work/{feature-name}/tech-spec.md
 - work/{feature-name}/user-spec.md (if exists)
-- .claude/skills/project-knowledge/guides/architecture.md (ALWAYS)
-- .claude/skills/project-knowledge/guides/patterns.md (ALWAYS)
-- .claude/skills/project-knowledge/guides/project.md (ALWAYS)
+- .claude/skills/project-knowledge/references/architecture.md (ALWAYS)
+- .claude/skills/project-knowledge/references/patterns.md (ALWAYS)
+- .claude/skills/project-knowledge/references/project.md (ALWAYS)
 - {additional_docs_based_on_keywords}
 - ~/.claude/shared/work-templates/tasks/task.md.template
 
@@ -419,8 +419,8 @@ Read:
 - work/{feature-name}/tech-spec.md
 - work/{feature-name}/user-spec.md (if exists)
 - All task files: work/{feature-name}/tasks/*.md
-- .claude/skills/project-knowledge/guides/architecture.md
-- .claude/skills/project-knowledge/guides/patterns.md
+- .claude/skills/project-knowledge/references/architecture.md
+- .claude/skills/project-knowledge/references/patterns.md
 
 For EACH task file, validate:
 

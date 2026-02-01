@@ -46,8 +46,8 @@ User has already created project.md via `/init-project-discovery`. Project is a 
 [Creates files]
 
 Готово! Открой:
-- [features.md](.claude/skills/project-knowledge/guides/features.md)
-- [roadmap.md](.claude/skills/project-knowledge/guides/roadmap.md)
+- [features.md](.claude/skills/project-knowledge/references/features.md)
+- [roadmap.md](.claude/skills/project-knowledge/references/roadmap.md)
 
 Всё верно?
 
@@ -164,8 +164,8 @@ User has project.md for a subscription management platform. Initially seems simp
 
 **Claude:** Готово!
 
-- [features.md](.claude/skills/project-knowledge/guides/features.md) - все 16 функций, сгруппированы по блокам
-- [roadmap.md](.claude/skills/project-knowledge/guides/roadmap.md) - 6 фаз миграции с рисками
+- [features.md](.claude/skills/project-knowledge/references/features.md) - все 16 функций, сгруппированы по блокам
+- [roadmap.md](.claude/skills/project-knowledge/references/roadmap.md) - 6 фаз миграции с рисками
 
 Это серьезный проект, посмотри детально. Если что-то не так - правим.
 

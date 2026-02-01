@@ -13,7 +13,7 @@ description: |
 
 ## Overview
 
-This skill manages project documentation in `.claude/skills/project-knowledge/guides/`. It helps create concise, project-specific documentation through interviews and codebase analysis, audit existing docs for bloat and anti-patterns, edit documentation files, verify consistency across files, and track documentation status.
+This skill manages project documentation in `.claude/skills/project-knowledge/references/`. It helps create concise, project-specific documentation through interviews and codebase analysis, audit existing docs for bloat and anti-patterns, edit documentation files, verify consistency across files, and track documentation status.
 
 ## When to Use
 
@@ -26,7 +26,7 @@ Activate this skill when:
 
 ## Documentation Structure
 
-Every project uses **11 core documentation files** in `.claude/skills/project-knowledge/guides/`:
+Every project uses **11 core documentation files** in `.claude/skills/project-knowledge/references/`:
 
 1. **project.md** - High-level overview, target audience, core features, out of scope
 2. **features.md** - Complete feature inventory with priorities, dependencies, status
@@ -53,7 +53,7 @@ For detailed information about each file's sections and purpose, see [references
 **Process:**
 
 1. **Verify setup:**
-   - Check if `.claude/skills/project-knowledge/guides/` exists
+   - Check if `.claude/skills/project-knowledge/references/` exists
    - If missing, create structure or suggest using `/init-project` command
 
 2. **Fill project.md via interview:**
@@ -78,7 +78,7 @@ For detailed information about each file's sections and purpose, see [references
    - **ux-guidelines.md** - UI language, tone, glossary (interview about user-facing aspects)
 
    **Special handling:**
-   - **patterns.md** - Keep Universal Patterns from template (`~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/patterns.md`), add Project-Specific Patterns only if custom conventions exist. For simple projects, empty Project-Specific section is acceptable.
+   - **patterns.md** - Keep Universal Patterns from template (`~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/patterns.md`), add Project-Specific Patterns only if custom conventions exist. For simple projects, empty Project-Specific section is acceptable.
    - **business-rules.md** - OPTIONAL, create only if project has complex domain logic (workflows, calculations, state machines)
 
    **Process for each file:**
@@ -105,7 +105,7 @@ For detailed information about each file's sections and purpose, see [references
 **Process:**
 
 1. **Read all documentation files:**
-   - Load all 11 core guide files from `.claude/skills/project-knowledge/guides/`
+   - Load all 11 core guide files from `.claude/skills/project-knowledge/references/`
    - Also check CLAUDE.md and README.md for quality issues
 
 2. **Identify quality issues:**
@@ -120,7 +120,7 @@ For detailed information about each file's sections and purpose, see [references
    - 📏 Bloated sections (too long, too detailed)
 
    **IMPORTANT - patterns.md exception:**
-   - ✅ **Universal Patterns section is intentional** - This section comes from the global template (`~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/patterns.md`) and contains common best practices
+   - ✅ **Universal Patterns section is intentional** - This section comes from the global template (`~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/patterns.md`) and contains common best practices
    - ✅ **DO NOT flag Universal Patterns as "generic" or "to be removed"** - This content ensures consistent code quality across all projects
    - ✅ **Only audit Project-Specific Patterns section** - This is where project-specific content should be added if needed
    - ✅ **Simple projects can have empty Project-Specific section** - If project is straightforward, only Universal Patterns are sufficient
@@ -218,7 +218,7 @@ For audit criteria and examples, see [references/principles.md](references/princ
 
 ## Root Project Files (CLAUDE.md & README.md)
 
-Projects have two root-level documentation files that serve as entry points to the main documentation in `.claude/skills/project-knowledge/guides/`:
+Projects have two root-level documentation files that serve as entry points to the main documentation in `.claude/skills/project-knowledge/references/`:
 
 ### CLAUDE.md - For AI Agents
 
@@ -267,7 +267,7 @@ Projects have two root-level documentation files that serve as entry points to t
 
 ### Relationship to Project-Knowledge Guides
 
-Both CLAUDE.md and README.md are **meta-documentation** that points to the real documentation in `.claude/skills/project-knowledge/guides/`. They should:
+Both CLAUDE.md and README.md are **meta-documentation** that points to the real documentation in `.claude/skills/project-knowledge/references/`. They should:
 
 - Be stable and rarely change
 - Avoid duplication of information from the 11 core guides

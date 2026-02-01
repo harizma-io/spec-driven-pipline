@@ -197,7 +197,7 @@ Skip `/init-git` if you already have a GitHub repository.
 
 **Solutions:**
 1. Fill manually:
-   - Open `.claude/skills/project-knowledge/guides/architecture.md`
+   - Open `.claude/skills/project-knowledge/references/architecture.md`
    - Add missing information
    - Git commit
 
@@ -475,7 +475,7 @@ git reset --hard HEAD~1  # Undo last commit
 3. Checks repeat
 
 **If disagree with reviewer:**
-- Update `.claude/skills/project-knowledge/guides/patterns.md` with your rules
+- Update `.claude/skills/project-knowledge/references/patterns.md` with your rules
 - Re-run review (will use your patterns)
 
 ---
@@ -629,7 +629,7 @@ Include:
 - Command that failed
 - Full error message
 - System info (OS, Node.js version, etc.)
-- .claude/skills/project-knowledge/guides/ structure
+- .claude/skills/project-knowledge/references/ structure
 - Git status
 
 ---

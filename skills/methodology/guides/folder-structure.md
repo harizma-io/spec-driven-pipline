@@ -86,7 +86,7 @@ my-project/
 ├── .claude/                         # Claude configuration
 │   ├── skills/                      # Project-specific skills
 │   │   └── project-knowledge/       # Project knowledge base
-│   │       ├── guides/              # 7 documentation guides
+│   │       ├── references/           # 7 documentation references
 │   │       │   ├── project.md       # Project overview and goals
 │   │       │   ├── architecture.md  # Tech stack and architecture
 │   │       │   ├── database.md      # Database schema and queries

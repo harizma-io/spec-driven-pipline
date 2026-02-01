@@ -7,7 +7,7 @@ This file defines what makes good project documentation and provides criteria fo
 Documentation should be **concise** and contain **only project-specific information**. Assume the reader is an experienced developer who knows common frameworks and patterns. Focus on what makes THIS project unique.
 
 **Exception:** `patterns.md` has a special structure - it contains both:
-- **Universal Patterns** section (from template `~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/guides/patterns.md`) - contains common best practices shared across all projects. This content is intentional and should NOT be removed.
+- **Universal Patterns** section (from template `~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/patterns.md`) - contains common best practices shared across all projects. This content is intentional and should NOT be removed.
 - **Project-Specific Patterns** section - custom patterns for this specific project
 
 ---
