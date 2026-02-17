@@ -33,6 +33,7 @@ All documentation is in the `references/` folder:
 - **[ux-guidelines.md](references/ux-guidelines.md)** - Interface language, tone of voice, domain glossary, text patterns, design system, accessibility requirements
 - **[monitoring.md](references/monitoring.md)** - Logging, error tracking, metrics, health checks, alerting for production monitoring
 - **[business-rules.md](references/business-rules.md)** - Domain workflows, validation rules, calculations, state machines (optional - delete if not needed)
+- **[testing.md](references/testing.md)** - Test infrastructure, agent verification methods, user verification steps
 
 ## How to use
 
