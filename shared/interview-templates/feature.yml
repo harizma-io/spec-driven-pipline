@@ -1,44 +1,43 @@
 # Interview Plan for Feature Planning
 #
-# This file tracks progress of adaptive discovery interview for a new feature/bug/refactoring.
+# Tracks progress of adaptive discovery interview for a new feature/bug/refactoring.
 # Updated after EACH user response with scoring, values, and remaining gaps.
-#
-# CRITICAL: This file enables session recovery. Save after EVERY user response.
 #
 # Scoring: 0-100% (how well we understand this aspect)
 # Status: pending → partial → complete
-# Required: true = must reach 70%, false = optional
+# Required: true = must reach threshold, false = cover if relevant
 
 # ============================================================================
 # Interview Metadata (Session Recovery)
 # ============================================================================
 interview_metadata:
-  started: ""  # Timestamp when interview started (YYYY-MM-DD HH:MM:SS)
-  last_updated: ""  # Timestamp of last update
-  session_interrupted: false  # Set to true if session ends unexpectedly
-  can_resume: true  # Can this interview be resumed later?
-  current_question_num: 0  # Track which question we're on
+  started: ""  # Timestamp (YYYY-MM-DD HH:MM:SS)
+  last_updated: ""
+  status: "not_started"  # not_started | in_progress | completed
+  can_resume: true
+  current_question_num: 0
+  feature_size: ""  # S | M | L
 
 # ============================================================================
-# Full Conversation History (for session recovery)
+# Conversation History (for session recovery)
 # ============================================================================
-# This section preserves complete Q&A for resume functionality.
-# Update after EVERY user response - this is your backup if session breaks.
+# Preserves complete Q&A. Update after EVERY user response.
 #
 conversation_history: []
-# Format for each entry:
+# Format:
 # - question_num: 1
 #   timestamp: "2025-11-12 15:20:33"
-#   topic: "user_problem"  # Which item in phases this question addresses
+#   topic: "user_problem"
 #   agent_question: |
-#     [Full text of question asked by agent]
+#     [Full question text]
 #   user_answer: |
-#     [Full text of user's answer]
-#   summary: "Brief summary for quick reference"
+#     [Full answer text]
+#   summary: "Brief summary"
 
 # ============================================================================
 # Phase 1: High-Level Feature Understanding
 # ============================================================================
+# Interview Cycle 1 scope
 phase1_feature_overview:
 
   feature_name:
@@ -52,295 +51,250 @@ phase1_feature_overview:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need clear one-line description + 1-2 sentences of context"
+    gaps: "Need clear description + context"
     required: true
 
   work_type:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to determine: feature | bug | refactoring"
+    gaps: "Determine: feature | bug | refactoring"
     required: true
 
   user_problem:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to understand: what pain point are we solving, why it matters"
+    gaps: "What pain point, why it matters"
     required: true
 
   target_users:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: who will use this (specific user personas/roles)"
-    required: true
+    gaps: "Who specifically will use this"
+    required: false
 
   success_criteria:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: how we measure success (concrete, testable criteria)"
+    gaps: "How we measure success (concrete, testable)"
     required: true
 
-  out_of_scope:
+  constraints:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: what we explicitly DON'T do in this iteration"
+    gaps: "Technical/business constraints"
+    required: true
+
+  testing_strategy:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "Integration tests needed? E2E? Why/why not?"
     required: true
 
 # ============================================================================
 # Phase 2: User Experience & Scenarios
 # ============================================================================
+# Interview Cycle 2 scope (together with Phase 3)
 phase2_user_experience:
 
   user_stories:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need user scenarios: step-by-step how user will interact with feature"
+    gaps: "Step-by-step user interaction scenarios"
     required: true
 
   acceptance_criteria:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need testable acceptance criteria (checklist of what must work)"
+    gaps: "Testable checklist of what must work"
     required: true
 
   edge_cases:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to identify: unusual scenarios, boundary conditions"
-    required: false  # Optional but useful
+    gaps: "Unusual scenarios, boundary conditions"
+    required: true
 
   error_scenarios:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: what can go wrong, how to handle errors"
-    required: false  # Optional but important for robustness
+    gaps: "What can go wrong, how to handle errors"
+    required: true
+
+  verification_strategy:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "How to verify feature works (agent and/or user)"
+    required: true
 
   ui_ux_requirements:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Any specific UI/UX requirements, mockups, design constraints"
-    required: false  # Only if feature has UI
+    gaps: "Specific UI/UX requirements if applicable"
+    required: false
+
+  risks:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "Risks and mitigations"
+    required: true
+
+  technical_decisions:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "Key decisions (what we do/don't, why)"
+    required: false
+
+  deploy_approach:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "How to deploy: CI/CD, manual, Docker? What needs setup?"
+    required: false
+
+  manual_user_actions:
+    score: 0
+    status: "pending"
+    value: ""
+    gaps: "Steps user must do manually (create bot, get API keys, configure service)"
+    required: false
 
 # ============================================================================
 # Phase 3: Integration & Technical Context
 # ============================================================================
+# Interview Cycle 2 scope (together with Phase 2)
 phase3_integration:
 
   integration_points:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: where this fits in existing system (which components affected)"
+    gaps: "Where this fits in existing system"
     required: true
 
   dependencies:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Need to know: what existing features/services this depends on"
-    required: false  # Optional
+    gaps: "Existing features/services this depends on"
+    required: false
 
   technical_constraints:
     score: 0
     status: "pending"
     value: ""
-    gaps: "Any technical limitations, performance requirements, security concerns"
-    required: false  # Optional but important
+    gaps: "Technical limitations, performance, security"
+    required: false
 
   data_requirements:
     score: 0
     status: "pending"
     value: ""
-    gaps: "What data is needed? Where does it come from? How to store?"
-    required: false  # Only if feature involves data
+    gaps: "What data needed, where from, how stored"
+    required: false
 
   migration_needs:
     score: 0
     status: "pending"
     value: ""
-    gaps: "If changing existing behavior: how to migrate existing users/data?"
-    required: false  # Only for breaking changes
+    gaps: "Migration plan for existing users/data"
+    required: false
 
 # ============================================================================
-# Phase 4: User Spec Review (User Approval)
+# Phase 4: Completion
 # ============================================================================
-# After filling user-spec.md - track user review status
-phase4_userspec_review:
-
-  userspec_created:
-    status: "pending"  # pending | created | approved
-    file_created: ""  # Path to created file: work/{feature-name}/user-spec.md
-    feature_name: ""  # Feature folder name
-    timestamp_created: ""  # When file was created
-    notes: "User spec not yet created"
-
-  user_review:
-    status: "pending"  # pending | awaiting_feedback | changes_requested | approved
-    review_requests: []  # Track review iterations
-    # Format for each review request:
-    # - iteration: 1
-    #   timestamp: "2025-11-12 16:30:00"
-    #   file_shown: "work/feature-name/user-spec.md"
-    #   user_response: "pending"  # pending | approved | changes_requested
-    #   feedback: ""  # User's feedback if changes requested
-    #   changes_made: ""  # Summary of changes made
+phase4_completion:
+  userspec_file: ""  # work/{feature}/user-spec.md
+  status: "pending"  # pending | created | approved
 
 # ============================================================================
-# Decision Rules (How to conduct interview)
+# Decision Rules
 # ============================================================================
 decision_rules:
 
-  # Scoring thresholds
-  required_threshold: 70    # Required items must reach >= 70%
-  optional_threshold: 50    # Optional items can be lower
+  required_threshold: 85
+  optional_threshold: 50
 
-  # When to stop interview
+  # Stop criteria (BOTH must be true to exit a cycle)
   stop_criteria:
-    - "All required items have score >= 70%"
-    - "OR user has exhausted knowledge (answered everything or marked as TBD)"
-    - "Quality check: Can we write clear, actionable user-spec from this info?"
+    - "All required items in current cycle scope score >= 85%"
+    - "Structural: every required item has non-empty value, no TBD, gaps empty or conscious limitations"
 
-  # What to ask next (priority order)
   priority_order:
-    - "Required items with score < 70% (ask about lowest score first)"
-    - "Optional items that user mentioned in context (suggests importance)"
-    - "Other optional items (if user seems knowledgeable)"
+    - "Required items with score < 85% (lowest score first)"
+    - "Optional items mentioned by user in context"
+    - "Other optional items if user seems knowledgeable"
 
-  # How to ask
   question_strategy:
-    - "Ask ONE question at a time (not batch)"
-    - "After each answer: update plan, check scores, decide next question"
-    - "If answer reveals new gaps: add them to plan immediately"
-    - "If feature understanding changes: update ALL affected scores"
+    - "3-4 questions per batch about different gaps"
+    - "Run as many batches as needed — batch size is NOT cycle limit"
+    - "Propose solutions based on PK, not just ask questions"
+    - "Challenge with substance: counterexamples, code references, unexplored scenarios"
+    - "After each response: update scores, values, gaps, conversation_history, save"
 
 # ============================================================================
-# Interview Progress Tracking
+# Interview Progress
 # ============================================================================
 progress:
   current_phase: "phase1_feature_overview"
   questions_asked: 0
   last_question: ""
-  total_required_score: 0   # Average score of required items
-  total_optional_score: 0   # Average score of optional items
+  total_required_score: 0
+  total_optional_score: 0
   completion_estimate: "0%"
-
-  # Dynamic adjustments
-  feature_complexity: "unknown"  # simple | medium | complex (adjust as you learn)
-  user_detail_level: "unknown"   # brief | moderate | detailed (affects question depth)
+  user_detail_level: "unknown"  # brief | moderate | detailed
 
 # ============================================================================
 # Notes
 # ============================================================================
 notes: |
-  Free-form notes about interview progress:
-  - Important insights discovered
-  - Areas where user is uncertain
-  - Things to revisit later
-  - Pivot points where understanding changed
+  Free-form notes:
+  - Important insights
+  - Areas of uncertainty
+  - Pivot points
+  - Scope changes
 
 # ============================================================================
 # USAGE INSTRUCTIONS
 # ============================================================================
 #
-# 1. CREATE: Copy this template to project at interview start
-#    Location: .claude/tmp/interview-feature-{timestamp}.yml
-#    Set interview_metadata.started timestamp
+# 1. INIT: Created by init-feature-folder.sh at work/{feature}/logs/userspec/interview.yml
+#    Set metadata.started, metadata.status: in_progress
 #
 # 2. INITIAL SCORING: After user's free-form description, score ALL items
-#    - If user mentioned something: score based on detail (30-90%)
-#    - If not mentioned: leave at 0%
-#    - Update 'value' and 'gaps' fields
+#    Detailed 80-95%, brief 50-70%, vague 20-40%, not mentioned 0%
 #
-# 3. ITERATIVE LOOP (CRITICAL - save after EVERY step):
-#    a) Find highest-priority gap (required, lowest score)
-#    b) Ask ONE question about it
-#    c) User answers
-#    d) **IMMEDIATELY update plan**:
-#       - Add to conversation_history (full Q&A)
-#       - Update interview_metadata.last_updated
-#       - Increment interview_metadata.current_question_num
-#       - Update score (0-100% based on clarity)
-#       - Update value (what we learned)
-#       - Update gaps (what's still missing)
-#       - Update status (pending → partial → complete)
-#       - Update progress section (total_required_score, etc.)
-#    e) **SAVE updated plan** - don't batch, save NOW
-#    f) Check stop_criteria
-#    g) If not done: repeat from (a)
+# 3. INTERVIEW LOOP (save after EVERY response):
+#    a) Find required items with score < 85% in current cycle scope
+#    b) Ask 3-4 questions about different gaps
+#    c) Propose solutions based on PK
+#    d) User answers
+#    e) Update: conversation_history, scores, values, gaps, metadata
+#    f) Save immediately
+#    g) Check stop criteria (score >= 85% AND structural: value filled, no TBD, gaps resolved)
+#    h) Not done → repeat. Done → next cycle.
 #
-# 4. CONVERSATION HISTORY FORMAT:
-#    conversation_history:
-#      - question_num: 1
-#        timestamp: "2025-11-12 15:20:33"
-#        topic: "user_problem"
-#        agent_question: |
-#          Какую конкретно проблему решает эта фича?
-#          [FULL question text]
-#        user_answer: |
-#          Сейчас пользователям приходится...
-#          [FULL answer text - preserve everything user said]
-#        summary: "Users waste time on manual process, need automation"
+# 4. CYCLES:
+#    Cycle 1: phase1_feature_overview items
+#    Cycle 2: phase2_user_experience + phase3_integration items
+#    Cycle 3: ALL items still below threshold (cleanup pass)
 #
-# 5. RESUME FUNCTIONALITY:
-#    If interview-feature-*.yml exists in .claude/tmp/:
-#    a) Read interview_metadata, conversation_history, and phase4_userspec_review
-#    b) **Check if in review phase:** If phase4_userspec_review.userspec_created.status is "created":
-#       - Show user: "Нашёл интервью, ожидающее твоего подтверждения по user spec."
-#       - Jump to Phase 6 Step 2 (show file, ask for approval)
-#       - Resume review process from there
-#    c) **If NOT in review phase:**
-#       - Show user summary: "Found ongoing interview (started X, Y% complete)"
-#       - Show brief recap of what was discussed (read conversation_history)
-#       - Ask: "Continue from where we left off or start fresh?"
-#       - If continue: resume from current_question_num + 1
-#       - If fresh: archive old file, create new one
+# 5. RESUME: If metadata.status is "in_progress"
+#    Load, show conversation summary, resume from current state
 #
-# 6. ADAPTIVE SCORING EXAMPLES:
-#    - User says "add payment processing"
-#      → feature_description: 50% (clear intent but lacks detail)
-#    - User says "integrate Stripe for one-time payments, subscription support comes later"
-#      → feature_description: 90% (very clear and detailed)
-#    - User says "не знаю"
-#      → If required: help them discover (score stays low)
-#      → If optional: mark as TBD, move to next (score 50%, mark as "TBD")
-#
-# 7. PIVOT HANDLING:
-#    - If feature understanding changes (e.g., "actually it's a bug fix, not new feature")
-#      → Update work_type
-#      → Update ALL affected scores
-#      → Adjust questions accordingly
-#      → Note the pivot in conversation_history
-#
-# 8. PHASE 4 - USER SPEC REVIEW (CRITICAL):
-#    After filling work/{feature-name}/user-spec.md:
-#    a) **Update plan - userspec_created**:
-#       - Set status: "created"
-#       - Set file_created: "work/{feature-name}/user-spec.md"
-#       - Set feature_name: "{feature-name}"
-#       - Set timestamp_created
-#       - **SAVE plan**
-#    b) **Show file to user with clickable link**:
-#       - [work/{feature-name}/user-spec.md](work/{feature-name}/user-spec.md)
-#       - Ask: "Посмотри, пожалуйста. Всё правильно? Нужны ли изменения?"
-#    c) **Update plan - user_review**:
-#       - Set status: "awaiting_feedback"
-#       - Add to review_requests (iteration 1, file shown, user_response: "pending")
-#       - **SAVE plan**
-#    d) **Wait for user response** (CRITICAL - don't skip this!):
-#       - If changes requested: make edits, update review_requests, show updated file, repeat
-#       - If approved: update user-spec.md frontmatter (status: approved), set user_review.status: "approved", save plan, proceed
-#    e) **Only when approved**: suggest next step (/create-tech-spec {feature-name})
-#
-# 9. CLEANUP: After Phase 6 (user approval), optionally delete this file
-#    OR keep for future reference/audit trail
-#    (User spec is filled and approved, plan served its purpose)
-#
+# 6. COMPLETION: After user approves user-spec.md
+#    Set phase4_completion.status: approved
+#    Set metadata.status: completed

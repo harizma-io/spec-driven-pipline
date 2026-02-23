@@ -1,498 +1,281 @@
 ---
 name: project-planning
 description: |
-  Plan new projects: fills project.md + features.md + roadmap.md through interview.
+  Plan new projects: adaptive interview, tech decisions,
+  fill all project documentation (project-knowledge + backlog) in one session.
 
-  AUTOMATIC TRIGGER - Invoke when user says ANY of:
-  "сделай описание проекта", "запиши описание проекта в документацию", "проведи со мной интервью для описания проекта"
+  Use when: "сделай описание проекта", "запиши описание проекта в документацию",
+  "проведи со мной интервью для описания проекта", "заполни документацию проекта",
+  "начни планирование проекта", "давай опишем проект", "plan a new project",
+  "fill project documentation"
 
-  Do NOT use for: feature planning (use user-spec-planning), tech planning (use tech-spec-planning)
+  For feature planning use user-spec-planning; for tech planning use tech-spec-planning.
 ---
 
 # Project Planning
 
-## Overview
+Conduct adaptive interview → make tech decisions → fill all project documentation in one session.
 
-Conduct comprehensive adaptive interview that fills all three planning documents:
-- **project.md** - High-level project overview, target audience, core problem, key features, scope boundaries
-- **features.md** - Complete feature inventory with priorities and dependencies
-- **roadmap.md** - Development phases, milestones, and timeline
+## Output Files
 
-## When to Use
+**Project Knowledge** (`.claude/skills/project-knowledge/references/`):
+- **project.md** — overview, audience, problem, key features, scope
+- **architecture.md** — tech stack, project structure, dependencies, data model
+- **patterns.md** — git workflow (code patterns, testing, business rules are filled later during development)
+- **deployment.md** — platform, environment, CI/CD, monitoring
+- **ux-guidelines.md** — only if project has significant UI
 
-Activate this skill when:
-- Starting a new project from scratch
-- Need to plan project comprehensively: what it is, what features it has, how to develop it
-- User asks to plan or decompose a project
+**Project Backlog** (path from CLAUDE.md `Backlog:` field):
+- **features.md** — complete feature inventory with priorities
+- **roadmap.md** — development phases and milestones (or minimal if simple project)
 
-## Approach
+## Interview Methodology
 
-### Your Role
+**Communication:** Conversational Russian.
 
-You're conducting a planning interview to understand how to break down the project into manageable pieces. Be conversational, adaptive, and help the user think through unclear aspects.
+**One question at a time.** Ask one question, wait for the answer, then form the next question based on the response.
 
-**Communication style:** Разговорный (conversational Russian)
+**Build on answers.** If user mentioned a domain — ask domain-relevant follow-ups. If they said something vague — clarify that specific point.
 
-### Core Principles
+**Confirm understanding.** After 3-5 questions, briefly summarize what you understood. Catches misunderstandings early.
 
-1. **Adapt to the conversation**
-   Every project is different. Let the conversation flow naturally based on what the user says.
+**Help when stuck.** When user says "not sure" or "don't know":
+1. Say it's OK
+2. Offer 2-3 common approaches for their type of project
+3. Ask which is closer
+4. If still uncertain and optional — mark TBD, move on
+5. If still uncertain and required — break into simpler sub-questions
 
-2. **Build on previous answers**
-   Each response reveals new context. Use what you learn to guide next questions.
+**Recount on scope changes.** If user suddenly adds many features or reveals unexpected complexity — stop and recount total scope. Show the updated list, confirm you understood correctly.
 
-3. **Help when stuck**
-   If user doesn't know something, don't skip it. Offer examples, break down questions, suggest common patterns.
+**If code exists.** Analyze the codebase in parallel with the interview:
+- Scan package.json / requirements.txt / go.mod for tech stack
+- Check directory structure for architecture patterns
+- Read configs for deployment setup
+- Use discoveries to ask more targeted questions and pre-fill technical decisions
 
-4. **Trust your judgment**
-   You're an LLM, not a script. Think about what information is needed, don't follow mechanical rules.
+## Phase 1: Project Discovery
 
-5. **Confirm understanding**
-   Periodically summarize to ensure you understood correctly.
-
-## Process
-
-### Phase 1: Gather Project Overview
-
-**Verify environment:**
-- Check if `.claude/skills/project-knowledge/references/project.md` exists (template)
-- If missing, tell user to run `/init-project` first
-
-**Check for existing interview (Resume functionality):**
-
-Before starting new interview, check if one is in progress:
-```bash
-ls .claude/tmp/interview-plan-*.yml 2>/dev/null
-```
-
-If file exists:
-1. Read `interview_metadata`, `conversation_history`, and `phase4_documentation_review` sections
-2. **Check if in review phase:** If `phase4_documentation_review.documentation_created.status` is "created":
-   - Show user: "Нашёл интервью, ожидающее твоего подтверждения."
-   - Jump directly to Phase 5 Step 2 (show files with links, ask for approval)
-   - Resume review process from there
-3. **If NOT in review phase:**
-   - Show user: "Нашёл незавершённое интервью (начато: {started}, прогресс: {completion_estimate})"
-   - Show brief recap: "Вот что мы уже обсудили:" + list topics from conversation_history
-   - Ask: "Продолжить с того места, где остановились, или начать заново?"
-   - If continue: Load interview plan, resume from current state
-   - If restart: Archive old file (rename with .old suffix), create new one
-
-**Start free-form conversation:**
-
-Ask user to describe the project in free form. Guide them to cover:
-- What the project is about
-- Why it's needed (problem being solved)
-- Who will use it (target audience)
-- What main features/capabilities should be there
-
-Let them describe as much or as little as they want - from one sentence to detailed spec.
-
-**Create Interview Plan (if new interview):**
-
-Copy interview plan template and initialize metadata:
-```bash
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-cp ~/.claude/shared/interview-plan-template.yml .claude/tmp/interview-plan-$TIMESTAMP.yml
-```
-
-Immediately update metadata after creating:
-- Set `interview_metadata.started` to current timestamp
-- Set `interview_metadata.last_updated` to current timestamp
-- Save the file
-
-**Initial Scoring:**
-
-Read the interview plan file and score Phase 1 items based on user's free-form description:
-- If user mentioned something clearly: 80-95% (detailed) or 50-70% (brief)
-- If user mentioned something vaguely: 20-40%
-- If not mentioned at all: 0%
-
-Update the plan file with:
-- Scores for each item
-- `value` field with what we learned
-- `gaps` field with what's still missing
-- Save the updated plan
-
-**Iterative Interview Loop:**
-
-Now enter iterative loop (ask → listen → update → decide → repeat):
-
-1. **Find next gap:** Look at interview plan, find highest-priority gap:
-   - Required items (score < 70%) first, lowest score first
-   - Then optional items if user seems knowledgeable
-
-2. **Ask ONE question:** Ask about that specific gap
-   - Make it conversational in Russian
-   - Don't batch multiple questions
-
-3. **Listen to answer**
-
-4. **IMMEDIATELY update interview plan (CRITICAL for session recovery):**
-
-   a) **Add to conversation_history** (full preservation):
-      ```yaml
-      - question_num: [increment from current_question_num]
-        timestamp: "[current timestamp]"
-        topic: "[which item this addresses, e.g. 'core_problem']"
-        agent_question: |
-          [FULL TEXT of your question - preserve exactly]
-        user_answer: |
-          [FULL TEXT of user's answer - preserve EVERYTHING they said]
-        summary: "[Brief one-line summary for quick reference]"
-      ```
-
-   b) **Update metadata:**
-      - `interview_metadata.last_updated` = current timestamp
-      - `interview_metadata.current_question_num` = increment by 1
-
-   c) **Update scoring as before:**
-      - Update score (based on how well answer fills the gap)
-      - Update `value` field (what we learned - can be brief summary)
-      - Update `gaps` field (what's still missing)
-      - Update `status` (pending → partial → complete)
-      - If answer reveals new gaps: add them
-      - If project understanding changed: update other scores
-
-   d) **Update progress tracking:**
-      - Recalculate `progress.total_required_score`
-      - Recalculate `progress.completion_estimate`
-      - Update `progress.questions_asked`
-      - Update `progress.last_question`
-
-   e) **SAVE the updated plan file** - don't batch, save NOW
-      This is your backup. If session breaks, conversation_history will restore context.
-
-5. **Check stop criteria:**
-   - All Phase 1 required items >= 70%?
-   - OR user has no more info (all answered or marked TBD)?
-   - If YES: move to Phase 2
-   - If NO: go back to step 1
-
-**Example scoring:**
-- User: "Todo app for myself" → target_audience: 70% (clear but brief)
-- User: "Developers building CLI tools who need X because Y" → target_audience: 95%
-- User: "Не знаю" → If required: help discover. If optional: mark TBD, score 50%
-
-**Do NOT fill project.md yet** - just gather information in interview plan. User might change their mind during Phase 2-3.
-
-### Phase 2: Gather Feature Information (Detailed Inventory)
-
-**Start the conversation:**
-
-Transition to features discussion. Briefly summarize what you understood from Phase 1, then ask about features in detail. Let user choose format: quick list or detailed descriptions.
-
-**Update Interview Plan after response:**
-
-Score Phase 2 items based on user's response:
-- Did they list features? → `feature_list`: 50-90% depending on detail
-- Did they mention priorities? → `feature_priorities`: score accordingly
-- Did they explain WHY features needed? → `feature_user_value`: score accordingly
-
-Save updated plan.
-
-**Iterative Interview Loop (same structure as Phase 1):**
-
-1. **Find next gap:** Look at interview plan Phase 2 section:
-   - Required items (score < 70%) first
-   - Optional items if relevant
-
-2. **Ask ONE question:** About the specific gap
-   - If they listed features but no priorities: Ask which are critical for MVP
-   - If no user value explained: Ask why user needs this feature
-   - If uncertain: Help break down by user journeys, suggest common features
-
-3. **Listen to answer**
-
-4. **IMMEDIATELY update interview plan (same as Phase 1):**
-   - Add full Q&A to `conversation_history`
-   - Update `interview_metadata` (last_updated, current_question_num)
-   - Update scores, values, gaps, status
-   - If they mention dependencies: update `dependencies` item
-   - If they mention technical constraints: update `technical_constraints` item
-   - Update progress tracking
-   - **SAVE plan file NOW**
-
-5. **Check stop criteria:**
-   - All Phase 2 required items >= 70%?
-   - OR user has no more info?
-   - If YES: move to Phase 3
-   - If NO: continue loop
-
-**Gathering approach (choose based on context):**
-- If user listed many features: Ask about all priorities together, then details one-by-one
-- If user uncertain: One feature at a time, help discover
-- If user detailed: Quick clarifying questions only
-
-**Do NOT fill features.md yet** - just gather information in interview plan. User might refine understanding based on Phase 3.
-
-### Phase 3: Determine Roadmap Needs
-
-**Ask about development approach:**
-
-Ask whether user plans phased development or building everything at once.
-
-**Update Interview Plan after response:**
-
-Score Phase 3 items based on answer:
-- `development_approach`: 90-100% (should be clear yes/no)
-- If phased: `phasing_strategy` and `milestones` become relevant
-- If migration: `migration_context` becomes relevant
-
-**Iterative Interview Loop:**
-
-1. **Find next gap:** Look at Phase 3 section:
-   - If phased development: need `phasing_strategy` and `milestones`
-   - If migration project: need `migration_context` details
-
-2. **Ask ONE question:**
-   - If phased: Ask how to group features, what's MVP vs later phases
-   - If phased: Ask about milestones and exit criteria for each phase
-   - If migration: Ask about current system, data migration strategy, risks
-
-3. **Listen to answer**
-
-4. **IMMEDIATELY update interview plan (same as Phase 1 & 2):**
-   - Add full Q&A to `conversation_history`
-   - Update `interview_metadata` (last_updated, current_question_num)
-   - Update scores, values, gaps for relevant items
-   - Update progress tracking
-   - **SAVE plan file NOW**
-
-5. **Check stop criteria:**
-   - All Phase 3 required items >= 70%?
-   - OR user has no more info?
-   - If YES: proceed to Phase 4 (Fill Documentation)
-   - If NO: continue loop
-
-**Important - NO time estimates:**
-- Focus on: phases, milestones, exit criteria
-- Do NOT ask about: weeks, months, deadlines
-- AI-First development pace is unpredictable
-- Roadmap is about WHAT and in WHAT ORDER, not WHEN
-
-**Do NOT fill roadmap.md yet** - just gather information in interview plan. Now you have complete picture from all three phases.
-
-### Phase 4: Fill All Three Documentation Files
-
-**Now that you have complete picture from Phases 1-3, fill all three documentation files.**
-
-**Read Interview Plan:**
-
-Open the interview plan file from `.claude/tmp/interview-plan-*.yml` and use it as source:
-- Phase 1 section → fills project.md
-- Phase 2 section → fills features.md
-- Phase 3 section → fills roadmap.md
-
-**If documentation files don't exist** (old project):
-Copy from template:
-```bash
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/project.md .claude/skills/project-knowledge/references/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/features.md .claude/skills/project-knowledge/references/
-cp ~/.claude/shared/templates/new-project/.claude/skills/project-knowledge/references/roadmap.md .claude/skills/project-knowledge/references/
-```
-
-**Fill project.md:**
-- File: `.claude/skills/project-knowledge/references/project.md`
-- Source: Interview plan Phase 1 (`value` fields)
-- Keep it high-level (3-5 key features only from `key_features_highlevel`)
-- Content in English (except Cyrillic project names)
-
-**Fill features.md:**
-- File: `.claude/skills/project-knowledge/references/features.md`
-- Source: Interview plan Phase 2 (`value` fields)
-- List ALL features from `feature_list`
-- Include priorities from `feature_priorities`
-- Include user value from `feature_user_value`
-- Include dependencies from `dependencies` if present
-- Group features logically if many
-
-**Fill roadmap.md:**
-- File: `.claude/skills/project-knowledge/references/roadmap.md`
-- Source: Interview plan Phase 3 (`value` fields)
-- If simple project (`development_approach` = all at once): minimal roadmap or mostly empty
-- If phased: detailed phases from `phasing_strategy` and milestones from `milestones`
-- If migration: detailed migration plan from `migration_context`
-- **NO time estimates** - use milestones and exit criteria only
-
-**Content language:** English (documentation is always in English)
-
-**Cleanup Interview Plan (optional):**
-
-After successfully filling all three files, you can either:
-
-**Option A - Delete** (saves space):
-```bash
-rm .claude/tmp/interview-plan-*.yml
-```
-
-**Option B - Keep** (audit trail):
-- Leave the file in `.claude/tmp/` for future reference
-- Useful if user wants to see what questions were asked
-- Can resume or review the interview process later
-- Documentation is now the source of truth, but interview plan shows how we got there
-
-Recommend: Keep the file (it's small, might be useful)
-
-### Phase 5: Review and Iterate
-
-**CRITICAL: This phase is mandatory. Do NOT skip user approval.**
-
-After filling all three documentation files, you MUST get user approval before finishing.
-
-**Step 1: Update Interview Plan (documentation created):**
+### 1.1 Verify Environment
 
 ```bash
-# Update phase4_documentation_review section in interview plan
+test -d .claude/skills/project-knowledge/references && echo "HAS_PK" || echo "NO_PK"
+test -f CLAUDE.md && echo "HAS_CLAUDE_MD" || echo "NO_CLAUDE_MD"
 ```
 
-Update the interview plan file:
-- Set `phase4_documentation_review.documentation_created.status`: "created"
-- Set `phase4_documentation_review.documentation_created.files_created`: ["project.md", "features.md", "roadmap.md"]
-- Set `phase4_documentation_review.documentation_created.timestamp_created`: current timestamp
-- **SAVE the plan file**
+- `NO_PK` or `NO_CLAUDE_MD` → tell user to run `/init-project` first
+- All clear → proceed
 
-**Step 2: Show Files to User (with clickable links):**
+### 1.2 Check for Existing Code
 
-Tell user (in Russian):
+```bash
+ls -d src/ lib/ app/ cmd/ pkg/ *.py *.ts *.js *.go Cargo.toml 2>/dev/null | head -5
+```
 
-"Готово! Я заполнил все три файла планирования:
+Code found → note for Phase 2 (extract stack from code instead of deciding from scratch).
 
-- [project.md](.claude/skills/project-knowledge/references/project.md) - Описание проекта
-- [features.md](.claude/skills/project-knowledge/references/features.md) - Список фич с приоритетами
-- [roadmap.md](.claude/skills/project-knowledge/references/roadmap.md) - План разработки
+### 1.3 Interview
 
-Посмотри, пожалуйста. Всё правильно? Есть что изменить?"
+Ask user to describe the project in free form. Let them say as much or as little as they want.
 
-**Step 3: Update Interview Plan (awaiting feedback):**
+Then ask adaptive questions to cover three areas:
 
-Update the interview plan:
-- Set `phase4_documentation_review.user_review.status`: "awaiting_feedback"
-- Add to `phase4_documentation_review.user_review.review_requests`:
-  ```yaml
-  - iteration: 1
-    timestamp: "[current timestamp]"
-    files_shown: ["project.md", "features.md", "roadmap.md"]
-    user_response: "pending"
-    feedback: ""
-    changes_made: ""
-  ```
-- **SAVE the plan file**
+**Project Overview:**
+- What the project does (one-line + context)
+- Who uses it and why (target audience + use case)
+- What problem it solves (core pain point)
+- 3-5 key features (high-level only)
+- What it explicitly doesn't do (out of scope)
 
-**Step 4: Wait for User Response (CRITICAL - don't proceed without approval!):**
+**Features:**
+- Complete feature list with descriptions
+- Priority for each: Critical / Important / Nice-to-have
+- Why each feature matters (user value)
+- Dependencies between features (if relevant)
 
-User can respond in three ways:
+**Development Approach:**
+- All at once or phased?
+- If phased: how to group features, what's MVP
+- If migration: current system, data migration, risks, rollback plan
 
-**A) Changes requested:**
-1. Make the requested edits to the files
-2. Update interview plan:
-   - Update last review_request: set `user_response`: "changes_requested", `feedback`: "[what user said]", `changes_made`: "[summary of changes]"
-   - Add new review_request (increment iteration)
-   - **SAVE plan**
-3. Show updated files with links again
-4. Return to Step 4 (wait for response again)
+### 1.4 Checkpoint
 
-**B) Approved:**
-1. Update interview plan:
-   - Update last review_request: set `user_response`: "approved"
-   - Set `phase4_documentation_review.user_review.status`: "approved"
-   - **SAVE plan**
-2. Tell user: "Отлично! Планирование завершено."
-3. Suggest next step: "Следующий шаг: `/init-context` для технического планирования (архитектура, стек, паттерны)."
-4. Skill work is DONE
+Move to Phase 2 when you can:
+- Write a clear, non-vague project.md
+- List all features with priorities
+- Describe the development approach
 
-**C) Questions/unclear:**
-1. Answer questions
-2. If questions lead to changes: follow path A
-3. If just clarification: continue waiting for approval or change request
+Not every answer needs to be perfect. TBD is acceptable for optional aspects.
 
-**Important:**
-- Do NOT suggest `/init-context` until user approves
-- Do NOT end the skill until user explicitly approves or asks to stop
-- If session breaks during review, next session will resume from review state (thanks to interview plan tracking)
+## Phase 2: Technical Decisions
 
-## Handling Special Cases
+### 2.1 New Project (no code)
 
-### User Says "Не знаю"
+1. **Propose tech stack** based on Phase 1: frontend, backend, database, key dependencies
+2. **Verify via Context7:** resolve-library-id → query-docs for each technology. Update if Context7 reveals deprecations or better alternatives. If Context7 unavailable — proceed and note it.
+3. **Propose deployment:** platform, CI/CD approach, environments
+4. **Show proposal:**
 
-Don't skip the question. Help them think through it:
-- Say you understand
-- Explain common approaches for this type of project (2-3 variants with examples)
-- Ask which is closer to their situation
-- If still uncertain and it's optional: mark as TBD and move on
-- If still uncertain and it's required: help break down into simpler questions
+   ```
+   Предлагаю tech stack:
+   **Frontend:** [technology] — [why]
+   **Backend:** [technology] — [why]
+   **Database:** [technology] — [why]
+   **Deployment:** [platform] — [why]
 
-### Project Turns Out More Complex
+   Согласен или есть правки?
+   ```
 
-If initial understanding was wrong, adapt:
-- Acknowledge the complexity increased
-- Explain what you initially thought vs what you now understand
-- Update interview plan: lower affected scores, add new gaps
-- Ask more detailed questions about newly discovered areas
+5. Iterate until user approves.
 
-### Unclear Requirements
+### 2.2 Existing Code
 
-If you can't understand something after multiple attempts:
-- Suggest marking it as TBD
-- Explain it can be revisited later when more clear
-- Note it in documentation as something to resolve
-- Move to next gap rather than getting stuck
+1. **Extract stack** from package files, configs, directory structure
+2. **Verify via Context7:** check versions and best practices
+3. **Confirm with user:** show what you found, ask about gaps (deployment, missing pieces)
+4. Iterate until confirmed.
 
-## Resources
+### 2.3 Checkpoint
 
-This skill includes reference documentation:
+Tech stack and deployment approach approved by user.
 
-### references/conversation-examples.md
-Real examples of good planning conversations:
-- Simple project (3 features)
-- Complex project (15+ features)
-- Migration project
-- Uncertain/exploratory project
+## Phase 3: Fill Documentation
 
-Shows full conversations with thinking process.
+Documentation goal: someone opens these files and understands the project without reading code. Describe what exists, what it does, and why. Record decisions, operational details (server addresses, deploy procedures, log locations), high-level component overview. Skip what's obvious from code. No code blocks or pseudocode — link to source files. No duplication between files.
 
-### references/documentation-guide.md
-Guidance on filling project.md, features.md, and roadmap.md:
-- project.md structure and principles (high-level vs detailed)
-- When to make roadmap detailed vs minimal
-- How to structure features
-- How to group and prioritize
-- Migration-specific patterns
+Use Edit tool to replace template placeholders with real content. Content language: English.
 
-Read this reference when you need detailed guidance on documentation structure and content decisions.
+### 3.1 Project Knowledge Files
 
-## Quality Guidelines
+**project.md** — from Phase 1 interview:
+- Project overview, target audience, core problem
+- 3-5 key features only (high-level, one-line descriptions)
+- Out of scope
+- Details belong in features.md, not here
 
-**Good project.md:**
-- ✅ Clear, specific one-line description (not vague)
-- ✅ Specific target audience (not "everyone")
-- ✅ Core problem clearly articulated (why this matters)
-- ✅ Key features = only 3-5 most important (high-level)
-- ✅ Out of scope section (prevents scope creep)
-- ✅ Concise and high-level (details belong in features.md)
+**architecture.md** — from Phase 2 decisions + codebase analysis:
+- Tech stack with "why" for each choice
+- Project structure (directory tree)
+- Key dependencies (only critical ones, not everything)
+- External integrations
+- Data flow
+- Data model (fill if known, leave template sections if TBD)
 
-**Good features.md:**
-- ✅ Every feature has clear user value
-- ✅ Priorities are justified
-- ✅ Dependencies are explicit
-- ✅ Grouped logically if many features
-- ✅ Concise but complete descriptions
+**patterns.md** — fill git workflow section:
+- Branch structure, branch decision criteria
+- Testing requirements per branch
+- Security gates (pre-commit, pre-push)
+- Leave code patterns, testing methods, and business rules sections minimal — filled during development as patterns emerge
 
-**Good roadmap.md:**
-- ✅ Realistic phases
-- ✅ Clear milestones
-- ✅ Considers dependencies
-- ✅ For migrations: detailed risk mitigation
-- ✅ Minimal if project is simple (not bloated)
+**deployment.md** — from Phase 2 decisions:
+- Platform, type, rationale
+- Deployment triggers (what deploys where)
+- Environments and URLs
+- Environment variables (reference .env.example)
+- Monitoring: fill if configured, note "not yet configured" if not
 
-**Bad practices:**
-- ❌ **project.md:** Vague description ("a platform for everything")
-- ❌ **project.md:** Too broad target audience or unclear
-- ❌ **project.md:** Key features list is exhaustive (should be in features.md)
-- ❌ **project.md:** Too detailed (belongs in features.md/architecture.md)
-- ❌ **project.md:** Missing out of scope section
-- ❌ **features.md:** Features too granular (tasks, not features)
-- ❌ **features.md:** No priorities ("everything is important")
-- ❌ **features.md:** No user value explained
-- ❌ **roadmap.md:** Timeline estimates (weeks/months/dates) - AI-First development uses milestones instead
-- ❌ **roadmap.md:** Bloated roadmap for simple project
+**ux-guidelines.md** — only if project has significant UI. Skip entirely for CLIs, APIs, bots without custom UI.
+
+### 3.2 Backlog Files
+
+Read backlog path from CLAUDE.md `Backlog:` field. If field missing — ask user where to save.
+
+Create directory if needed:
+```bash
+BACKLOG_DIR="<path from CLAUDE.md>"
+mkdir -p "$BACKLOG_DIR"
+```
+
+**features.md** — from Phase 1 interview:
+
+Format per feature:
+```markdown
+## 1. [Feature Name]
+**Priority:** [Critical | Important | Nice-to-have]
+**Status:** Planned
+**Description:** [What it does and why]
+```
+
+Priority levels: **Critical** — blocks launch, core value. **Important** — needed for smooth operation, can launch without. **Nice-to-have** — enhances experience, can wait for v2. If everything is Critical — push back: "If you could only launch with 3 features, which ones?"
+
+Group features when >8 (by user type, subsystem, or functional area). Add dependencies only when non-obvious: `**Dependencies:** User Auth (#1)`.
+
+Features are user-facing capabilities, not implementation tasks. Wrong: "Create user button". Right: "User Management — complete CRUD".
+
+**roadmap.md** — from Phase 1 interview:
+
+Decision tree:
+- Simple project (<8 features, building all at once) → minimal: "Building all features simultaneously. See features.md for priorities."
+- Phased development, >10 features, or complex dependencies → detailed with phases, milestones, exit criteria
+- Migration project → always detailed + migration context (current system, rollback plan, pre/post-migration phases)
+
+No time estimates — milestones and exit criteria only.
+
+### 3.3 Checkpoint
+
+All output files from "Output Files" section created. No template placeholders remain.
+
+## Phase 4: Review & Commit
+
+### 4.0 Self-Verify
+
+Before presenting to user, verify:
+- All output files listed in "Output Files" section were created
+- No template placeholders remain (search for `[Project Name]`, `[Description]`, etc.)
+- features.md contains every feature discussed in interview
+- architecture.md tech stack matches user-approved decisions from Phase 2
+- roadmap.md complexity matches project scope (minimal for simple, detailed for phased/migration)
+
+If any check fails — fix before proceeding.
+
+### 4.1 Documentation Review
+
+Run `documentation-reviewer` agent (Task tool, sonnet) on the project. Fix critical and major findings. Minor findings — fix or leave at your discretion.
+
+### 4.2 Show Files
+
+Tell user (Russian):
+
+```
+Документация заполнена:
+
+**Project Knowledge:**
+- [project.md](.claude/skills/project-knowledge/references/project.md) — описание проекта
+- [architecture.md](.claude/skills/project-knowledge/references/architecture.md) — архитектура и стек
+- [patterns.md](.claude/skills/project-knowledge/references/patterns.md) — git workflow
+- [deployment.md](.claude/skills/project-knowledge/references/deployment.md) — деплой
+
+**Backlog:**
+- [features.md](<backlog_path>/features.md) — фичи с приоритетами
+- [roadmap.md](<backlog_path>/roadmap.md) — план разработки
+
+Посмотри. Всё правильно? Есть что изменить?
+```
+
+Include ux-guidelines.md in the list if it was created.
+
+### 4.3 Iterate
+
+- Changes requested → edit files → show updated list → repeat
+- Questions → answer → continue waiting for approval
+- Repeat until user approves
+
+### 4.4 Commit
+
+After approval, ask: "Закоммитить?"
+
+If yes:
+```bash
+git add .claude/skills/project-knowledge/references/*.md \
+       <backlog_path>/features.md \
+       <backlog_path>/roadmap.md
+
+git commit -m "$(cat <<'EOF'
+feat: fill project documentation
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+Final message: "Документация заполнена! Можно начинать разработку."

@@ -1,607 +1,185 @@
 ---
 name: user-spec-planning
 description: |
-  Create user-spec.md for features/bugs through interview.
+  Creates user-spec.md through adaptive interview with codebase scanning and dual validation.
 
-  AUTOMATIC TRIGGER - Invoke when user says ANY of:
-  "сделай юзер спек", "проведи интервью для юзер спека"
+  Use when: "сделай юзер спек", "проведи интервью для юзер спека",
+  "создай юзерспек", "user spec", "detailed planning", "хочу продумать фичу",
+  "опиши требования к фиче", "сделай описание фичи", "/new-user-spec"
 
-  Do NOT use for: tech planning (use tech-spec-planning), project planning (use project-planning)
+  For tech planning use tech-spec-planning. For project planning use project-planning.
 ---
 
 # User Spec Planning
 
-## Overview
+Thorough adaptive interview → codebase scan → user-spec.md → dual validation → user approval.
+Output: `work/{feature}/user-spec.md` with status `approved`.
 
-Conduct comprehensive adaptive interview that creates detailed user-spec.md:
-- Read project context (project.md, architecture.md)
-- Deep Q&A to understand requirements and user value
-- Explore user scenarios, edge cases, integration points
-- Generate well-structured user specification (Russian)
-- Get user approval before finalizing
+## Interview Style
 
-## When to Use
+Conduct interview in Russian. Be thorough and opinionated — an engaged co-thinker who actively proposes solutions and challenges weak answers.
 
-Activate this skill when:
-- Creating user specification for complex features/bugs/refactorings
-- Need detailed business-level planning before technical implementation
-- Requirements are unclear and need exploration through interview
-- User says "создай юзерспек", "user spec", "detailed planning", "хочу продумать фичу"
+**How to interview:**
+- 3-4 questions per batch. Run as many batches as needed until the cycle's items are fully covered.
+- Propose solutions based on Project Knowledge: "В architecture.md описан паттерн X — думаю, здесь нужно Y. Согласен?"
+- Challenge with substance — concrete counterexamples, code references, unexplored scenarios: "А что если пользователь сделает Z? В коде модуль Q не обрабатывает этот случай."
+- Accept the answer after one substantive challenge and move on to the next gap.
+- When user says "не знаю": help think through it (examples, common patterns). Optional item → mark TBD. Required item → break into simpler questions.
 
-**Do NOT use for:**
-- Simple changes where requirements are already clear (use tech-spec-planning directly)
-- Technical planning (that's tech-spec-planning skill)
-
-## Approach
-
-### Your Role
-
-You're conducting a planning interview to create a comprehensive user specification. Be conversational, adaptive, and help the user think through all aspects of the feature.
-
-**Communication style:** Разговорный (conversational Russian)
-
-### Core Principles
-
-1. **Understand the project first**
-   Read project context before asking questions. Tailor questions to specific project architecture.
-
-2. **Adaptive conversation**
-   Every feature is different. Let the conversation flow naturally based on what the user says.
-
-3. **Build on previous answers**
-   Each response reveals new context. Use what you learn to guide next questions.
-
-4. **Help when stuck**
-   If user doesn't know something, don't skip it. Offer examples, break down questions, suggest common patterns.
-
-5. **Validate understanding**
-   Periodically summarize to ensure you understood correctly.
+**Interview depth** depends on feature size (S/M/L in interview metadata):
+- S (1-3 files, local fix): focused interview, core behavior
+- M (several components): moderate depth, integration questions
+- L (new architecture): deep interview, thorough edge cases and risk analysis
 
 ## Process
 
-### Phase 1: Read Project Context
+### Phase 0: Init
 
-**Check for existing interview (Resume functionality):**
+1. Check for existing interview: look in `work/*/logs/userspec/interview.yml` for `metadata.status: in_progress`. If found — load, show discussed topics summary, resume. If multiple found — show list, let user choose.
+2. Get task description: "Опиши, что хочешь сделать."
+3. Determine work_type (feature / bug / refactoring) from description.
+4. Propose feature name (kebab-case), get user confirmation.
+5. Run `~/.claude/shared/scripts/init-feature-folder.sh {name}` — creates folder structure with interview.yml.
+6. Update interview.yml: set metadata.started, metadata.status: in_progress, phase1_feature_overview.feature_name, phase1_feature_overview.work_type.
 
-Before starting new interview, check if one is in progress:
-```bash
-ls .claude/tmp/interview-feature-*.yml 2>/dev/null
-```
+**Checkpoint:** interview.yml exists with status in_progress, feature name confirmed.
 
-If file exists:
-1. Read `interview_metadata`, `conversation_history`, and `phase4_userspec_review` sections
-2. **Check if in review phase:** If `phase4_userspec_review.userspec_created.status` is "created":
-   - Show user: "Нашёл интервью, ожидающее твоего подтверждения по user spec."
-   - Jump directly to Phase 6 Step 2 (show file with link, ask for approval)
-   - Resume review process from there
-3. **If NOT in review phase:**
-   - Show user: "Нашёл незавершённое интервью по фиче (начато: {started}, прогресс: {completion_estimate})"
-   - Show brief recap: "Вот что мы уже обсудили:" + list topics from conversation_history
-   - Ask: "Продолжить с того места, где остановились, или начать заново?"
-   - If continue: Load interview plan, resume from current state
-   - If restart: Archive old file (rename with .old suffix), create new one
+### Phase 1: Study Project Knowledge
 
-**Read project context files:**
+Read ALL files from `.claude/skills/project-knowledge/references/`. If directory missing or empty — warn user, suggest running project-planning skill (or `/init-project-knowledge` command).
 
-Before asking questions, understand the project:
-```bash
-Read: .claude/skills/project-knowledge/references/project.md
-Read: .claude/skills/project-knowledge/references/architecture.md
-```
-
-**Do NOT read** patterns.md (that's for implementation, not planning).
+These files are your context for the entire interview. Reference them when asking questions and proposing solutions.
 
-**If context files missing:**
-Tell user: "Похоже, проект ещё не настроен. Сначала нужно заполнить базовую информацию о проекте. Запустите `/init-context` или расскажите о проекте вручную."
-
-Ask user if they want to continue without context or initialize project first.
+### Phase 2: Cycle 1 — General Understanding
 
-### Phase 2: Gather High-Level Feature Understanding
-
-**Start free-form conversation:**
-
-Ask user to describe what they want to add/fix/refactor. Let them describe as much or as little as they want.
-
-"Опиши подробно, что хочешь сделать. Какую фичу добавить или что исправить?"
-
-**Create Interview Plan (if new interview):**
-
-Copy interview plan template and initialize metadata:
-```bash
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-cp ~/.claude/shared/interview-templates/feature.yml .claude/tmp/interview-feature-$TIMESTAMP.yml
-```
-
-Immediately update metadata after creating:
-- Set `interview_metadata.started` to current timestamp
-- Set `interview_metadata.last_updated` to current timestamp
-- Save the file
+**Scope:** `phase1_feature_overview` items in interview.yml.
 
-**Determine work type automatically:**
+1. Score user's initial description against all items (detailed 80-95%, brief 50-70%, vague 20-40%, not mentioned 0%).
+2. Run interview loop (see below) on phase1_feature_overview items.
+3. During this cycle — determine feature size S/M/L and agree on testing strategy:
+   - S: integration/E2E usually not needed — state why
+   - M: propose whether integration tests make sense, explain reasoning
+   - L: propose specific integration and E2E scope with justification
 
-Based on user's description, determine:
-- **feature**: New functionality being added
-- **bug**: Fixing existing broken behavior
-- **refactoring**: Improving existing code without changing behavior
+### Phase 3: Code Scanning
 
-Update interview plan `phase1_feature_overview.work_type` with determined type.
+Launch `code-researcher` subagent (Task tool, opus) with feature path and feature description from Cycle 1.
 
-**Initial Scoring:**
+After subagent completes — read `{feature_path}/code-research.md`. Use findings in Cycle 2 questions.
 
-Read the interview plan file and score Phase 1 items based on user's free-form description:
-- If user mentioned something clearly: 80-95% (detailed) or 50-70% (brief)
-- If user mentioned something vaguely: 20-40%
-- If not mentioned at all: 0%
+If during later phases a gap is discovered — launch `code-researcher` again with the specific question to investigate.
 
-Update the plan file with:
-- Scores for each item
-- `value` field with what we learned
-- `gaps` field with what's still missing
-- Save the updated plan
+### Phase 4: Cycle 2 — Code-Informed Refinement
 
-**Iterative Interview Loop:**
-
-Now enter iterative loop (ask → listen → update → decide → repeat):
-
-1. **Find next gap:** Look at interview plan, find highest-priority gap:
-   - Required items (score < 70%) first, lowest score first
-   - Then optional items if relevant (user mentioned in context)
+**Scope:** `phase2_user_experience` + `phase3_integration` items.
 
-2. **Ask ONE question:** Ask about that specific gap
-   - Make it conversational in Russian
-   - Tailor to work_type (feature vs bug vs refactoring)
-   - Don't batch multiple questions
+1. Summarize understanding: "Я понял задачу так: [X]. Делать планирую так: [Y, based on code]."
+2. Questions based on code findings: "Нашёл модуль X, который делает Y — переиспользуем?"
+3. Cover deploy and user actions (items `deploy_approach`, `manual_user_actions`):
+   - "Нужны ли ручные шаги для запуска? (создать бота, получить API ключи, настроить сервис, зарегистрироваться где-то)"
+   - "Как деплоить? Что нужно настроить? (уже есть CI/CD, нужно настроить, ручной деплой)"
+   - "Как проверить что работает после деплоя? (MCP-инструменты, curl, ручная проверка)"
+4. Run interview loop on phase2 + phase3 items.
 
-3. **Listen to answer**
+### Phase 5: Cycle 3 — Review & Finalize
 
-4. **IMMEDIATELY update interview plan (CRITICAL for session recovery):**
+**Scope:** ALL items across all phases still below threshold.
 
-   a) **Add to conversation_history** (full preservation):
-      ```yaml
-      - question_num: [increment from current_question_num]
-        timestamp: "[current timestamp]"
-        topic: "[which item this addresses, e.g. 'user_problem']"
-        agent_question: |
-          [FULL TEXT of your question - preserve exactly]
-        user_answer: |
-          [FULL TEXT of user's answer - preserve EVERYTHING they said]
-        summary: "[Brief one-line summary for quick reference]"
-      ```
-
-   b) **Update metadata:**
-      - `interview_metadata.last_updated` = current timestamp
-      - `interview_metadata.current_question_num` = increment by 1
-
-   c) **Update scoring:**
-      - Update score (based on how well answer fills the gap)
-      - Update `value` field (what we learned - can be brief summary)
-      - Update `gaps` field (what's still missing)
-      - Update `status` (pending → partial → complete)
-      - If answer reveals new gaps: add them
-      - If feature understanding changed: update other scores
-
-   d) **Update progress tracking:**
-      - Recalculate `progress.total_required_score`
-      - Recalculate `progress.completion_estimate`
-      - Update `progress.questions_asked`
-      - Update `progress.last_question`
-
-   e) **SAVE the updated plan file** - don't batch, save NOW
-      This is your backup. If session breaks, conversation_history will restore context.
-
-5. **Check stop criteria:**
-   - All Phase 1 required items >= 70%?
-   - OR user has no more info (all answered or marked TBD)?
-   - If YES: move to Phase 3
-   - If NO: go back to step 1
-
-**Example questions for feature:**
-- "Какую проблему решает эта фича?"
-- "Кто будет это использовать?"
-- "Как должно работать? Опиши сценарий использования."
-
-**Example questions for bug:**
-- "Как воспроизвести баг?"
-- "Что ожидается vs что происходит сейчас?"
-- "Насколько критично?"
-
-**Example questions for refactoring:**
-- "Что именно проблема в текущем коде?"
-- "Какой результат хотим после рефакторинга?"
-- "Есть ли тесты для этого кода?"
+Cleanup pass: revisit anything not fully covered in Cycles 1-2. Deepen edge cases and error scenarios — probe for scenarios user hasn't considered, even if items formally passed threshold.
 
-### Phase 3: Gather User Experience Details
+Run interview loop on remaining gaps.
 
-**Start the conversation:**
-
-Transition to user experience discussion. Briefly summarize what you understood from Phase 2, then ask about scenarios.
+### Phase 6: Completeness Check
 
-**Iterative Interview Loop (same structure as Phase 2):**
-
-1. **Find next gap:** Look at interview plan Phase 2 section:
-   - `user_stories`: How user will interact step-by-step
-   - `acceptance_criteria`: What must work (testable checklist)
-   - `edge_cases`: Unusual scenarios
-   - `error_scenarios`: What can go wrong
-
-2. **Ask ONE question:** About the specific gap
-   - "Опиши пошагово: пользователь делает что → система отвечает как → результат?"
-   - "Как понять, что фича готова? Какие критерии?"
-   - "Какие граничные случаи могут быть?"
-
-3. **Listen to answer**
+Launch `interview-completeness-checker` subagent (Task tool, sonnet) with feature path. It reviews interview.yml against PK files and code-research.md.
 
-4. **IMMEDIATELY update interview plan (same as Phase 2):**
-   - Add full Q&A to `conversation_history`
-   - Update `interview_metadata` (last_updated, current_question_num)
-   - Update scores, values, gaps, status
-   - Update progress tracking
-   - **SAVE plan file NOW**
+- `needs_more` → ask the suggested questions, re-run checker
+- `complete` → proceed to Phase 7
 
-5. **Check stop criteria:**
-   - All Phase 2 required items >= 70%?
-   - OR user has no more info?
-   - If YES: move to Phase 4
-   - If NO: continue loop
+### Phase 7: Create User Spec
 
-### Phase 4: Gather Integration Context
+1. Copy template to working file:
+   - Copy `~/.claude/shared/work-templates/user-spec.md.template` → `work/{feature}/user-spec.md`
+   - Edit sections one by one using Edit tool, replacing placeholders with interview data
+   Reason: agent sees template structure and comments while editing each section, preventing drift from template format.
+2. Content rules:
+   - "Что делаем" — self-contained, understandable without the interview
+   - "Зачем" — concrete user value, not "улучшить UX"
+   - Acceptance criteria — testable, no "работает корректно"
+   - Every discussed topic from interview must appear in the spec
+3. If feature seems large (>10 criteria, >3 user flows, >5 integrations) — suggest splitting.
 
-**Ask about integration:**
+Git commit: `draft(userspec): create user-spec for {feature}`
 
-How does this fit into existing system?
+### Phase 8: Validation
 
-**Iterative Interview Loop:**
+Run 2 validators in parallel (Task tool):
+- `userspec-quality-validator` (sonnet) — document structure, template compliance, formal completeness. Returns JSON with per-check pass/fail and findings list.
+- `userspec-adequacy-validator` (opus) — feasibility, over/underengineering, better alternatives. Returns JSON with findings by category and severity.
 
-1. **Find next gap:** Look at Phase 3 section:
-   - `integration_points`: Where this fits in existing codebase
-   - `dependencies`: What existing features/services needed
-   - `technical_constraints`: Performance, security requirements
-   - `data_requirements`: What data needed, where from
+**Handling findings:**
+- Obvious issue → fix silently
+- Borderline → discuss with user
+- Disagree with finding → reject with reasoning
+- Conflict between validators → userspec-adequacy-validator takes priority (substance over form)
 
-2. **Ask ONE question:**
-   - "Где эта фича встраивается? Какие компоненты затрагивает?"
-   - "От каких существующих сервисов зависит?"
-   - "Какие данные нужны? Откуда берём?"
+After each validation round (validators wrote reports + you applied fixes), git commit: `chore(userspec): validation round {N} — {summary of fixes}`. Re-run validators. Max 3 iterations, then show remaining issues to user.
 
-3. **Listen to answer**
+### Phase 9: User Approval
 
-4. **IMMEDIATELY update interview plan:**
-   - Add to conversation_history
-   - Update metadata, scores, progress
-   - **SAVE plan file NOW**
+Show user-spec.md link + validation summary. If changes requested — edit and show again.
 
-5. **Check stop criteria:**
-   - All Phase 3 required items >= 70%?
-   - OR user has no more info?
-   - If YES: proceed to Phase 5 (Fill User Spec)
-   - If NO: continue loop
+When approved:
+1. Set user-spec.md frontmatter `status: approved`
+2. Set interview.yml `metadata.status: completed`
+3. Git commit: `chore(userspec): approve user-spec for {feature}`
+4. Suggest `/new-tech-spec {feature-name}`
 
-### Phase 5: Fill User Spec
+## Interview Loop
 
-**Now that you have complete picture from all phases, create user-spec.md.**
-
-**Propose feature name:**
-
-Based on feature description, propose a folder name:
-- lowercase
-- words separated by dashes
-- descriptive and concise
-- Example: "stripe-payments", "fix-drag-drop", "refactor-auth"
-
-Ask user: "Предлагаю название: `{proposed-name}`. Подходит или хотите изменить?"
-
-Wait for confirmation or alternative name.
-
-**Create feature folder:**
-```bash
-mkdir -p work/{feature-name}
-```
-
-**Read template:**
-```bash
-Read: ~/.claude/shared/work-templates/user-spec.md.template
-```
-
-**Fill user-spec.md:**
-
-File: `work/{feature-name}/user-spec.md`
-
-Source: Interview plan (`value` fields from all phases)
-
-Content (in Russian):
-- **Frontmatter:**
-  - `created`: Today's date (YYYY-MM-DD)
-  - `status`: draft
-  - `type`: feature|bug|refactoring (from Phase 1)
-
-- **Что делаем:** From `phase1_feature_overview.feature_description`
-- **Зачем:** From `phase1_feature_overview.user_problem`
-- **Как должно работать:** From `phase2_user_experience.user_stories`
-- **Критерии готовности:** From `phase2_user_experience.acceptance_criteria`
-- **Что НЕ делаем:** From `phase1_feature_overview.out_of_scope`
-
-Additional sections if relevant:
-- **Граничные случаи:** From `phase2_user_experience.edge_cases` (if scored > 50%)
-- **Обработка ошибок:** From `phase2_user_experience.error_scenarios` (if scored > 50%)
-- **Интеграция:** From `phase3_integration.integration_points` (if scored > 50%)
-- **Зависимости:** From `phase3_integration.dependencies` (if scored > 50%)
-
-**Write the file.**
-
-### Phase 5.5: Validate User Spec (Subagent)
-
-**After creating user-spec.md, validate it before showing to user.**
-
-Launch validation subagent:
+Runs inside each cycle. Repeats until the cycle's scope is fully covered.
 
 ```
-Use Task tool with subagent_type="general-purpose":
-
-"Validate the user specification at work/{feature-name}/user-spec.md
-
-Read these files:
-- work/{feature-name}/user-spec.md
-- .claude/skills/project-knowledge/references/project.md (if exists)
-- .claude/skills/project-knowledge/references/architecture.md (if exists)
-
-Validate against these criteria:
-
-## 1. Completeness and Clarity
-- [ ] All required sections filled (Что делаем, Зачем, Как работает, Критерии)
-- [ ] No placeholders or TODOs
-- [ ] 'Что делаем' is clear without additional questions
-- [ ] 'Зачем' explains real user value
-
-## 2. Business Logic
-- [ ] No contradictions in requirements
-- [ ] User value is specific and measurable
-- [ ] Scope clearly defined (what we do / what we DON'T do)
-- [ ] User scenarios are realistic
-
-## 3. Solution Optimality
-- [ ] Is this the best way to solve the user's problem?
-- [ ] Is there a simpler solution that wasn't considered?
-- [ ] Solution matches the scale of the problem (not over-engineering)?
-- [ ] Alternatives considered?
-
-## 4. Scalability (early check)
-- [ ] Solution won't create bottleneck with growth?
-- [ ] No N+1 patterns in described scenarios?
-- [ ] Data can be migrated/extended later?
-
-## 5. Security (red flags)
-- [ ] No dangerous patterns (plaintext passwords, missing authorization)
-- [ ] Personal data → protection plan exists
-- [ ] External integrations → validation plan exists
-
-## 6. Testability
-- [ ] Acceptance criteria are specific (not 'works correctly')
-- [ ] Each criterion can be verified automatically or manually
-- [ ] Edge cases considered
-
-Return JSON:
-{
-  'valid': true|false,
-  'score': {
-    'completeness': 1-10,
-    'business_logic': 1-10,
-    'optimality': 1-10,
-    'scalability': 1-10,
-    'security': 1-10,
-    'testability': 1-10
-  },
-  'issues': [
-    {
-      'severity': 'critical|warning|suggestion',
-      'category': 'completeness|business_logic|optimality|scalability|security|testability',
-      'issue': 'Description of the problem',
-      'why_matters': 'Why this is important',
-      'fix': 'How to fix it'
-    }
-  ],
-  'summary': 'Brief verdict in Russian'
-}
-
-Be specific about issues and provide actionable fixes."
+1. Find gaps: required items in current scope with score < 85%. Lowest first.
+2. Ask 3-4 questions about different gaps. Reference PK and code findings.
+3. User responds.
+4. Update interview.yml:
+   - conversation_history: add full Q&A entry
+   - Item: score, value, gaps, status
+   - metadata: last_updated, current_question_num
+   - Save immediately
+5. Check stop criteria (BOTH must be true):
+   a) All required items in scope score >= 85%
+   b) Structural: every required item has non-empty value,
+      no TBD in value, gaps empty or only conscious limitations
+6. Not done → step 1. Done → exit cycle.
 ```
 
-**Handle validation result:**
+Scoring: detailed answer 80-95%, brief 50-70%, vague 20-40%, not mentioned 0%.
 
-```
-if valid == true:
-    # Proceed to Phase 6
-    pass
+Optional items: cover when user mentions relevant context or when naturally connected to required items.
 
-elif has_critical_issues:
-    # Auto-fix critical issues
-    for issue in issues where severity == 'critical':
-        # Edit user-spec.md to fix the issue
-        # Use Edit tool
+## Work Type Adaptations
 
-    # Re-validate (max 2 retries)
-    retry_count += 1
-    if retry_count <= 2:
-        # Run validation again
-    else:
-        # Show issues to user, ask for help
-        "Не удалось автоматически исправить некоторые проблемы:"
-        # List remaining critical issues
-        "Помоги разобраться?"
+All three cycles apply to any work_type, but focus shifts:
 
-elif only_warnings_or_suggestions:
-    # Show to user as part of review
-    # Store warnings to display in Phase 6
-    validation_warnings = [issues where severity in ('warning', 'suggestion')]
-```
+**Bug:** Cycle 1 → reproduction steps, expected vs actual, severity, when it broke. Code scanning → find bug location and root cause. Cycle 2 → fix approach, regression risks.
 
-**Update interview plan after validation:**
+**Refactoring:** Cycle 1 → current problems, target architecture, stability guarantees. Code scanning → current structure, dependencies, test coverage. Cycle 2 → migration path, backward compatibility.
 
-Set `phase5_validation.status`: "completed"
-Set `phase5_validation.result`: validation JSON
-Set `phase5_validation.auto_fixes_applied`: list of fixes made
-**SAVE the plan file**
+## Scope Changes
 
-### Phase 6: Review and Approve
+If understanding changes significantly during interview:
+- Update affected scores downward, add new gaps
+- Reassess feature size (S/M/L)
+- If work_type changes (was feature, actually bug) — pivot items accordingly
+- Note the change in interview.yml notes section
 
-**CRITICAL: This phase is mandatory. Do NOT skip user approval.**
+## Self-Verification
 
-After filling user-spec.md, you MUST get user approval before finishing.
-
-**Step 1: Update Interview Plan (userspec created):**
-
-Update the interview plan file:
-- Set `phase4_userspec_review.userspec_created.status`: "created"
-- Set `phase4_userspec_review.userspec_created.file_created`: "work/{feature-name}/user-spec.md"
-- Set `phase4_userspec_review.userspec_created.feature_name`: "{feature-name}"
-- Set `phase4_userspec_review.userspec_created.timestamp_created`: current timestamp
-- **SAVE the plan file**
-
-**Step 2: Show File to User (with clickable link):**
-
-Tell user (in Russian):
-
-"Готово! Я подготовил user spec:
-
-[work/{feature-name}/user-spec.md](work/{feature-name}/user-spec.md)"
-
-**If validation had warnings/suggestions, show them:**
-
-"Валидация прошла успешно. Есть несколько замечаний:
-
-⚠️ **{category}**: {issue}
-   → {fix}
-
-(это не критично, но стоит учесть)"
-
-"Посмотри, пожалуйста. Всё правильно? Нужны ли изменения?"
-
-**Step 3: Update Interview Plan (awaiting feedback):**
-
-Update the interview plan:
-- Set `phase4_userspec_review.user_review.status`: "awaiting_feedback"
-- Add to `phase4_userspec_review.user_review.review_requests`:
-  ```yaml
-  - iteration: 1
-    timestamp: "[current timestamp]"
-    file_shown: "work/{feature-name}/user-spec.md"
-    user_response: "pending"
-    feedback: ""
-    changes_made: ""
-  ```
-- **SAVE the plan file**
-
-**Step 4: Wait for User Response (CRITICAL - don't proceed without approval!):**
-
-User can respond in three ways:
-
-**A) Changes requested:**
-1. Make the requested edits to user-spec.md
-2. Update interview plan:
-   - Update last review_request: set `user_response`: "changes_requested", `feedback`: "[what user said]", `changes_made`: "[summary of changes]"
-   - Add new review_request (increment iteration)
-   - **SAVE plan**
-3. Show updated file with link again
-4. Return to Step 4 (wait for response again)
-
-**B) Approved:**
-1. Update user-spec.md frontmatter: `status: draft` → `status: approved`
-2. Update interview plan:
-   - Update last review_request: set `user_response`: "approved"
-   - Set `phase4_userspec_review.user_review.status`: "approved"
-   - **SAVE plan**
-3. Tell user: "Отлично! User spec готов."
-4. Suggest next step: "Следующий шаг: `/create-tech-spec {feature-name}` для создания технической спецификации."
-5. Skill work is DONE
-
-**C) Questions/unclear:**
-1. Answer questions
-2. If questions lead to changes: follow path A
-3. If just clarification: continue waiting for approval or change request
-
-**Important:**
-- Do NOT suggest `/create-tech-spec` until user approves
-- Do NOT end the skill until user explicitly approves or asks to stop
-- If session breaks during review, next session will resume from review state (thanks to interview plan tracking)
-
-**Cleanup Interview Plan (optional):**
-
-After user approval (Step 4B completed), you can either:
-
-**Option A - Delete** (saves space):
-```bash
-rm .claude/tmp/interview-feature-*.yml
-```
-
-**Option B - Keep** (audit trail):
-- Leave the file in `.claude/tmp/` for future reference
-- Shows how user spec was created
-- Can review interview questions later
-- User spec is now the source of truth, but interview plan shows how we got there
-
-Recommend: Keep the file (it's small, might be useful)
-
-## Handling Special Cases
-
-### User Says "Не знаю"
-
-Don't skip the question. Help them think through it:
-- Say you understand
-- Explain common approaches (2-3 examples)
-- Ask which is closer to their situation
-- If still uncertain and it's optional: mark as TBD and move on
-- If still uncertain and it's required: break down into simpler questions
-
-### Feature Turns Out More Complex
-
-If initial understanding was wrong, adapt:
-- Acknowledge the complexity increased
-- Explain what you initially thought vs what you now understand
-- Update interview plan: lower affected scores, add new gaps
-- Ask more detailed questions about newly discovered areas
-
-### Unclear Requirements
-
-If you can't understand something after multiple attempts:
-- Suggest marking it as TBD
-- Explain it can be detailed in tech-spec phase
-- Note it in user spec as something to resolve
-- Move to next gap rather than getting stuck
-
-### No Project Context Available
-
-If project.md and architecture.md are missing:
-- Ask user if they want to initialize project first (`/init-context`)
-- OR continue without context (generic questions, not tailored to project)
-- Warn: "Без контекста проекта я буду задавать общие вопросы. Лучше сначала настроить проект."
-
-## Quality Guidelines
-
-**Good user-spec.md:**
-- ✅ Clear problem statement (why we're building this)
-- ✅ Specific target users (not "everyone")
-- ✅ Step-by-step user scenarios
-- ✅ Testable acceptance criteria (concrete checklist)
-- ✅ Clear out-of-scope section (prevents scope creep)
-- ✅ Considers edge cases and error handling
-- ✅ Integration points identified
-
-**Bad practices:**
-- ❌ Vague description ("make it better")
-- ❌ No user value explained ("just add X")
-- ❌ Missing acceptance criteria
-- ❌ No edge cases considered
-- ❌ Unclear scope boundaries
-- ❌ Technical implementation details in user spec (belongs in tech-spec)
-
-## Resources
-
-This skill uses shared templates:
-- `~/.claude/shared/interview-templates/feature.yml` - Interview tracking structure
-- `~/.claude/shared/work-templates/user-spec.md.template` - Output template
-
-Interview plan enables:
-- Session recovery (resume after interruption)
-- Progress tracking (completion estimate)
-- Full conversation history (what was discussed)
-- Adaptive scoring (know what gaps remain)
-- User approval tracking (review iterations and feedback)
+- [ ] All cycles completed, completeness checker passed
+- [ ] user-spec.md filled with real content (no placeholders)
+- [ ] Both validators passed (or issues resolved with user)
+- [ ] User approved, frontmatter status: approved
+- [ ] interview.yml metadata.status: completed
+- [ ] Suggested `/new-tech-spec` as next step

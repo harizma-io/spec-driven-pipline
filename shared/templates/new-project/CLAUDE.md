@@ -6,7 +6,9 @@
 
 ## How This Project Works
 
-**Context:** All project knowledge is in `.claude/skills/project-knowledge/` skill with guides for architecture, patterns, git workflow, UX, database, and deployment.
+**Context:** All project knowledge is in `.claude/skills/project-knowledge/` skill with guides for architecture, patterns, and deployment (+ optional UX guidelines and domain-specific files).
+
+**Backlog:** `./backlog.md`
 
 **Default branch:** `dev`
 

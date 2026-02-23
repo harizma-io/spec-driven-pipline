@@ -1,414 +1,338 @@
 ---
 name: methodology
 description: |
-  AI-First methodology: workflows, ~/.claude structure, command sequences.
+  AI-First development methodology: spec-driven pipeline, project structure,
+  skills/agents ecosystem, quality gates.
 
-  AUTOMATIC TRIGGER - Invoke when user says ANY of:
-  "изучи методологию", "изучи глобальную папку"
+  Use when: "изучи методологию", "изучи глобальную папку", "как работает методология",
+  "how does the methodology work", "explain the workflow"
 
-  Do NOT use for: project-specific tech (answer directly), infrastructure (use infrastructure skill)
+  For infrastructure tasks, use infrastructure-setup or deploy-pipeline skills.
 ---
 
 # AI-First Development Methodology
 
-## Overview
+## What Is This
 
-AI-First methodology is a structured development approach designed for entrepreneurs and small teams working with AI agents. It solves the core problem of **context loss between sessions** by implementing a distributed knowledge base and spec-driven workflow.
+A structured development approach for AI agents. Every feature goes through a pipeline: idea → spec → architecture → tasks → implementation → documentation update. Each stage has automated validators and quality gates. QA and deploy are regular tasks in the tech-spec, not separate pipeline steps.
 
-**Problems solved:**
-1. **Context loss** - Agent forgets previous work
-2. **Chaotic documentation** - Monolithic CLAUDE.md files overwhelm context window
-3. **Outdated knowledge** - Agent's knowledge cutoff (January 2025)
-4. **Lack of structure** - Every project organized differently
-5. **Quality issues** - No systematic review
-6. **Complex onboarding** - New developers get lost
-
-**Solution:**
-- **Distributed Knowledge Base** - Modular structure instead of monolith
-- **Proper hierarchy** - Context → User Spec → Tech Spec → Tasks → Code
-- **MCP Context7** - Real-time up-to-date documentation
-- **Agent Orchestration** - Specialized subagents for different tasks
-- **Quality automation** - Code review, tests, security scanning
-- **Git-friendly documentation** - Versioned with code
+Core problems it solves:
+- **Context loss between sessions** — distributed knowledge base persists across sessions
+- **Quality without human review** — automated validators at every stage
+- **Scope creep** — specs approved before coding starts
+- **Outdated agent knowledge** — Context7 MCP fetches current library docs
 
 ---
 
-## When to Use This Skill
+## Development Pipeline
 
-Invoke this skill when:
-- User asks about "методология" or "workflow"
-- Starting new project - need workflow guidance
-- Onboarding existing project - confused about approach
-- Daily development - which commands to use
-- Understanding system concepts and structure
-- Choosing between different workflows
-- Setting up project documentation
+The full path from idea to production. Each step has a command, a skill behind it, and validators.
 
-**Do NOT use when:**
-- User needs infrastructure setup (use `infrastructure` skill)
-- User needs testing strategy (use `testing` skill)
-- User wants to create/manage commands (use `command-manager` skill)
-- User asks about specific technical implementation (answer directly)
+### Step 1: User Spec — `/new-user-spec`
 
----
+**What:** Structured interview to capture requirements in human-readable form (Russian).
 
-## Key Concepts
+**Process:**
+- Agent reads Project Knowledge files to understand the project
+- Scans codebase for relevant code, patterns, integration points
+- Runs 3 interview cycles with the user (general → code-informed → edge cases)
+- `interview-completeness-checker` agent verifies coverage
+- Creates `user-spec.md` from interview data → git commit draft
+- 2 validators run in parallel (up to 3 iterations):
+  - `userspec-quality-validator` — document structure, acceptance criteria testability
+  - `userspec-adequacy-validator` — solution feasibility, over/underengineering
+- Git commit after each validation round
+- User approves → git commit approval (status: approved)
 
-### Just-In-Time Context
-Agent reads only necessary information for current task, not entire context.
+**Output:** `work/{feature}/user-spec.md` (status: approved)
 
-**How it works:**
-- Task development → read task.md, tech-spec.md, relevant context files
-- Feature development → read all tasks, tech-spec, user-spec
-- Context update → read only modified files
+**Skill:** `user-spec-planning`
 
-**Benefits:**
-- Reduced context window usage
-- Faster processing
-- More focused responses
+### Step 2: Tech Spec — `/new-tech-spec`
 
-### Single Source of Truth
-Each piece of information stored in one place, others reference it.
+**What:** Technical architecture, decisions, testing strategy, implementation plan.
 
-**Examples:**
-- Project description → `.claude/skills/project-knowledge/references/project.md`
-- Tech stack → `.claude/skills/project-knowledge/references/architecture.md`
-- Database schema → `.claude/skills/project-knowledge/references/database.md`
-- Deployment config → `.claude/skills/project-knowledge/references/deployment.md`
+**Process:**
+- Reads approved user-spec
+- Researches codebase, checks dependencies, uses Context7 for external libraries
+- Asks technical clarification questions
+- Copies tech-spec template, edits sections in place → `tech-spec.md` with architecture, decisions, testing strategy, brief Implementation Tasks (scope only — AC and TDD are added during task-decomposition) → git commit draft
+- 5 validators run in parallel (up to 3 iterations):
+  - `skeptic` — detects non-existent files, functions, APIs (mirages)
+  - `completeness-validator` — bidirectional requirements traceability, over/underengineering, solution depth
+  - `security-auditor` — OWASP Top 10 review
+  - `test-reviewer` — test plan adequacy
+  - `tech-spec-validator` — template compliance, task quality, wave conflict detection
+- Git commit after each validation round
+- User approves → git commit approval (status: approved)
 
-**Benefits:**
-- No duplication
-- No conflicts
-- Easy updates
+**Output:** `work/{feature}/tech-spec.md` (status: approved)
 
-### Spec-Driven Development
-Write specifications before code, always.
+**Skill:** `tech-spec-planning`
 
-**Flow:**
-1. **Context** - Project description (created once, updated) [English]
-2. **User Spec** - What we want and why (for human) [Russian]
-3. **Tech Spec** - How to implement technically (for agent) [English]
-4. **Tasks** - Concrete tasks from Tech Spec [English]
-5. **Code** - Implementation
+### Step 3: Task Decomposition — `/decompose-tech-spec`
 
-**Benefits:**
-- Clear requirements
-- Approved scope
-- Prevents scope creep
-- Enables parallel work
+**What:** Break tech-spec into atomic task files.
 
-### Progressive Disclosure
-Information revealed gradually from general to specific.
+**Process:**
+- For each Implementation Task in tech-spec, `task-creator` agent copies task template and fills it (parallel)
+- Each task file expands brief tech-spec scope into: acceptance criteria, TDD anchor (from Testing Strategy), context files, skills, reviewers, wave, dependencies → git commit draft
+- 2 validators run in parallel (up to 3 iterations):
+  - `task-validator` — template compliance, content quality
+  - `reality-checker` — validates against actual codebase (file existence, feasibility)
+- Git commit after each validation round
+- User approves → git commit approval
 
-**Levels:**
-1. `project.md` - What we're building
-2. `architecture.md` - What we're building with
-3. `user-spec.md` - What we want in feature
-4. `tech-spec.md` - How we implement feature
-5. `tasks/*.md` - Concrete work items
+**Output:** `work/{feature}/tasks/*.md` (validated)
 
-**Benefits:**
-- Cognitive load management
-- Better understanding
-- Easier navigation
+**Skill:** `task-decomposition`
 
-### Agent Orchestration
-Main agent coordinates specialized subagents for different tasks.
+### Step 4: Implementation
 
-**Roles:**
-- **Main agent** - Coordinates, makes decisions, plans
-- **code-developer** - Implements tasks, writes code and tests
-- **code-reviewer** - Reviews code quality, finds issues
-- **security-auditor** - Audits against OWASP Top 10
+**Choose `/do-task` when:** single task, manual control, debugging, iterating on one piece.
+**Choose `/do-feature` when:** multiple tasks ready, standard feature work, want parallel execution.
 
-**Skills:**
-- **infrastructure** - Sets up CI/CD, Docker, testing
-- **testing** - Provides testing strategy guidance
-- **methodology** - This skill, provides workflow guidance
+Two modes:
 
-**Benefits:**
-- Specialized expertise
-- Parallel execution
-- Quality assurance
+#### Mode A: Single Task — `/do-task`
 
-### Git-Friendly Documentation
-Documentation lives in Git with code. Reasoning in descriptions, history in Git.
+One task per session. Suited for manual, controlled execution.
 
-**What's versioned:**
-- All context files
-- All specs and tasks
-- All guides
-- All rules
+**Process:**
+- Reads task file and all its Context Files
+- Loads skills specified in task (e.g. `code-writing`, `pre-deploy-qa`, `infrastructure-setup`)
+- Follows loaded skill workflow (TDD for code tasks, verification for QA tasks, etc.)
+- Git commit implementation (code + tests pass)
+- Runs reviewers specified in task (if any), up to 3 review iterations
+- Git commit after each round of review fixes (tests pass)
+- Writes entry to `decisions.md`, updates task status → done
+- Git commit status + decisions
 
-**Benefits:**
-- History through `git log`
-- Review through `git diff`
-- Rollback through `git revert`
-- Branching for experiments
+**Skill:** Loaded from task file (typically `code-writing` for code tasks)
 
----
+#### Mode B: Full Feature — `/do-feature`
 
-## Workflow Decision Framework
+All tasks via agent teams. Team lead orchestrates waves of parallel work.
 
-### Decision Tree
+**Process:**
+- Team lead reads tech-spec and all task files, builds execution plan
+- Creates team via TeamCreate
+- Executes tasks wave by wave:
+  - Spawns one agent per task (parallel within wave)
+  - Each teammate: follows loaded skill workflow, commits code (tests pass), sends diff to reviewers, fixes findings with commits per round (max 3 rounds), commits review reports
+  - Each teammate writes `decisions.md` entry
+  - Lead commits status updates (task frontmatter + decisions.md) after wave completes — code is already committed by teammates
+- QA, deploy, and post-deploy verification are regular tasks defined in the tech-spec
+- User reviews results, team shuts down
 
-**Starting new project from scratch?**
-→ Use **New Project Workflow** ([guides/workflow-new-project.md](guides/workflow-new-project.md))
-- Command sequence: `/init-project` → `/init-git` → `/init-project-discovery` → `/init-context` → `/setup-infrastructure`
-- Result: Fully initialized project with context, git, and infrastructure
+Tasks can be code, user-action, deploy, config, or verification. Task nature is determined by its skill + description, not a separate type field.
 
-**Have existing project without documentation?**
-→ Use **Onboarding Workflow** ([guides/workflow-onboarding.md](guides/workflow-onboarding.md))
-- Command sequence: `/old-project` → `/old-folder-audit` → `/init-project-discovery` → `/init-context-old` → `/setup-infrastructure-old`
-- Result: Legacy code preserved, new AI-First structure created
+**Skill:** `feature-execution`
 
-**Working on feature/bug/refactor?**
-→ Use **Feature Development Workflow** ([guides/workflow-feature-dev.md](guides/workflow-feature-dev.md))
-- Command sequence: `/new-feature` → `/create-tech-spec` → `/tech-spec-decompose` → `/start-task` or `/start-feature`
-- Result: Feature implemented with specs, tasks, tests, and review
+### Step 5: Done — `/done`
 
-### Command Quick Reference
+**What:** Finalize feature, update project knowledge, archive.
 
-**Project Initialization:**
-- `/init-project` - Copy project template to current directory
-- `/init-git` - Initialize git repo and create GitHub remote
-- `/init-project-discovery` - Product discovery interview → create project.md
-- `/init-context` - Fill 7 context files for new project
-- `/init-context-old` - Fill 7 context files from legacy code audit
-- `/setup-infrastructure` - Setup framework, CI/CD, Docker, tests
-- `/setup-infrastructure-old` - Setup tests only (feature branch)
+**Process:**
+- Reads user-spec, tech-spec, decisions.md
+- Updates affected Project Knowledge files (architecture.md, patterns.md, deployment.md, etc.)
+- Moves `work/{feature}/` → `work/completed/{feature}/`
+- Commits changes
 
-**Onboarding Existing Project:**
-- `/old-project` - Archive old files, initialize new structure
-- `/old-folder-audit` - Analyze legacy code, create audit report
-
-**Feature Development:**
-- `/new-feature` - Interview → create User Spec
-- `/create-tech-spec` - Create Tech Spec from User Spec
-- `/tech-spec-decompose` - Decompose Tech Spec into atomic tasks
-- `/plan-task-waves` - Decompose into parallel waves
-- `/start-task` - Start single task (manual mode)
-- `/start-feature` - Start feature autopilot (sequential tasks)
-- `/start-feature-waves` - Start feature autopilot (parallel waves)
-
-**Utilities:**
-- `/project-context` - Load key project context files
-- `/meta-context` - Load context for ~/.claude/ meta-project
+**Skill:** Loads `documentation-writing` skill for PK update rules
 
 ---
 
-## Folder Structure Overview
+## Project Structure
 
-### Global Folder `~/.claude/`
+### Project Knowledge — the Knowledge Base
 
-Meta-project for AI-First methodology. Changes affect ALL projects.
+All project documentation lives in `.claude/skills/project-knowledge/references/`. This is the single source of truth for everything about the project.
+
+**4 core + optional files:**
+
+| File | Content |
+|------|---------|
+| `project.md` | Purpose, audience, core features, scope |
+| `architecture.md` | Tech stack, structure, dependencies, data model |
+| `patterns.md` | Code conventions, git workflow, testing, business rules |
+| `deployment.md` | Platform, env vars, CI/CD, monitoring |
+| `ux-guidelines.md` | UI language, tone, domain glossary (optional) |
+
+Features and roadmap live in the project backlog (external to PK).
+
+**CLAUDE.md is minimal.** It contains only the project name, a reference to project-knowledge skill, methodology overview, and default branch. All real information lives in Project Knowledge files.
+
+**`project-planning` skill** creates PK from scratch in new projects via interview (`/init-project-knowledge`).
+
+**`documentation-writing` skill** manages existing PK: audits, updates, checks consistency. `/done` command uses it to update PK after feature completion.
+
+### Work Items
+
+```
+work/{feature}/
+├── user-spec.md          # Requirements (Russian, for human)
+├── tech-spec.md          # Architecture (English, for agent)
+├── decisions.md          # Decisions made during implementation
+├── tasks/
+│   ├── 1.md              # Atomic task files
+│   ├── 2.md
+│   └── 3.md
+└── logs/                 # Working logs (interview, research, reviews)
+```
+
+Completed features are archived to `work/completed/{feature}/`.
+
+### Global Structure `~/.claude/`
 
 ```
 ~/.claude/
-├── shared/
-│   └── templates/
-│       ├── new-project/          # Complete project template
-│       ├── infrastructure/       # Infrastructure templates
-│       └── old-folder-audit.md   # Legacy audit template
-├── skills/
-│   ├── methodology/              # This skill
-│   ├── infrastructure/           # Infrastructure setup
-│   ├── testing/                  # Testing strategy
-│   ├── skill-creator/            # Skill creation guide
-│   └── command-manager/          # Command management
-├── agents/                       # Global subagents
-│   ├── code-developer/
-│   ├── code-reviewer/
-│   └── security-auditor/
-├── commands/                     # 19 slash commands
-├── hooks/                        # Automation hooks
-├── CLAUDE.md                     # GLOBAL instructions
-├── projects-registry.json        # All AI-First projects
-└── backlog.md                    # Meta-project backlog
+├── skills/               # Skills (methodology, workflow, quality)
+├── agents/               # Agents (validators, reviewers, creators)
+├── commands/             # Slash commands
+├── shared/               # Templates, scripts, interview plans
+├── hooks/                # Automation hooks
+└── CLAUDE.md             # Global instructions
 ```
-
-**Details:** [guides/folder-structure.md](guides/folder-structure.md)
-
-### Local Project Folder
-
-Created via `/init-project` or `/old-project`.
-
-```
-my-project/
-├── .claude/skills/project-knowledge/references/              # 7 context files
-│   ├── project.md                # Project description
-│   ├── architecture.md           # Tech stack
-│   ├── database.md               # Database config
-│   ├── deployment.md             # Deployment setup
-│   ├── ux-guidelines.md          # UI/UX guidelines
-│   ├── patterns.md               # Code patterns
-│   └── git-workflow.md           # Git strategy
-├── work/                         # Work items
-│   ├── feature-name/
-│   │   ├── user-spec.md          # What we want (Russian)
-│   │   ├── tech-spec.md          # How to implement (English)
-│   │   └── tasks/                # Atomic tasks
-│   │       ├── 1.md
-│   │       ├── 2.md
-│   │       └── 3.md
-│   ├── completed/                # Completed features (archive)
-│   └── templates/                # Templates for specs/tasks
-├── src/                          # Source code
-├── tests/                        # Tests
-├── CLAUDE.md                     # Project instructions
-└── README.md                     # Project README
-```
-
-**Completed features:** After feature is done, tested, and deployed, move `work/feature-name/` to `work/completed/feature-name/` to keep work folder clean.
-
-**Details:** [guides/folder-structure.md](guides/folder-structure.md)
-
-### Context Files (9 Files)
-
-1. **project.md** - Project description, audience, functionality, MVP scope
-2. **architecture.md** - Tech stack, architectural decisions, Context7 mention
-3. **database.md** - Database schema, migrations, query patterns
-4. **deployment.md** - Deployment setup, env vars, CI/CD pipeline
-5. **ux-guidelines.md** - UI text, tone of voice, design system
-6. **patterns.md** - Code patterns, best practices, conventions
-7. **git-workflow.md** - Git branching strategy, commit conventions, PR process
-8. **monitoring.md** - Logging, error tracking, metrics, health checks, alerts
-9. **business-rules.md** - Domain workflows, validation rules, calculations (optional)
-
-**Details:** [guides/project-knowledge-skill.md](guides/project-knowledge-skill.md)
-
-### Work Items Structure
-
-```
-work/feature-name/
-├── user-spec.md              # What we want (Russian)
-├── tech-spec.md              # How to implement (English)
-└── tasks/                    # Atomic tasks
-    ├── 1.md                  # Task 1
-    ├── 2.md                  # Task 2
-    └── 3.md                  # Task 3
-```
-
-**Task numbering:** Local to each feature (starts from 1).
-
-**Task frontmatter:**
-```yaml
----
-status: planned | in_progress | done
-type: implementation | test | documentation
----
-```
-
-**Details:** [guides/work-items.md](guides/work-items.md)
 
 ---
 
-## Templates System
+## Key Principles
 
-### New Project Template
+### Commit Strategy
+Commit after each step where the repository state is stable and meaningful. Not after every action — after each result.
 
-Location: `~/.claude/shared/templates/new-project/`
+- **Planning stages** (user-spec, tech-spec, tasks): draft commit → validation round commits → approval commit
+- **Single task execution** (do-task): implementation commit (tests pass) → review fix commits (tests pass) → status/decisions commit
+- **Feature execution** (do-feature): teammates commit code + review fixes, lead commits statuses per wave
+- **Finalization** (done): single commit with PK updates + archive
 
-**Contents:**
-- 7 context file templates with examples
-- `.gitignore` (security-focused)
-- `CLAUDE.md` template
-- `README.md` template
-- `work/` folder with templates
+### Spec-Driven Development
+Write specifications before code. The hierarchy: User Spec → Tech Spec → Tasks → Code. Code starts only after specs are approved.
 
-**Used by:** `/init-project` command
+### Validation at Every Stage
+- User spec: 2 validators (quality + adequacy)
+- Tech spec: 5 validators (skeptic + completeness + security + test + template/task-quality)
+- Tasks: 2 validators (template + reality)
+- Code: 3 reviewers (code + test + security)
+- QA tasks: pre-deploy QA (tests + acceptance criteria), post-deploy QA (verification on live environment)
 
-### Infrastructure Templates
+Max 3 fix iterations at each stage.
 
-Location: `~/.claude/shared/templates/infrastructure/`
+### Project Knowledge as Single Source of Truth
+Project documentation = `.claude/skills/project-knowledge/references/`. CLAUDE.md stays minimal — just a pointer. The `/done` command updates PK after every feature. The `documentation-writing` skill audits PK for bloat and quality.
 
-**Contents:**
-- `husky-pre-commit-gitleaks.sh` - Pre-commit hook
-- `smoke.test.ts` - TypeScript smoke test
-- `test_smoke.py` - Python smoke test
+### Just-In-Time Context
+Agent reads only what's needed for current task, not everything. Task files list their Context Files explicitly.
 
-**Used by:** `/setup-infrastructure` command
-
-### Old Folder Audit Template
-
-Location: `~/.claude/shared/templates/old-folder-audit.md`
-
-**Purpose:** Template for analyzing legacy code during onboarding.
-
-**Used by:** `/old-folder-audit` command
+### Context7 for Library Docs
+Agent uses Context7 MCP to fetch current library documentation instead of relying on training data. Used during tech-spec research and code implementation.
 
 ---
 
-## Context7 Integration
+## Skills Ecosystem
 
-**Problem:** Agent knowledge cutoff → outdated APIs and patterns.
+<!-- Some items excluded from catalog: internal tooling not part of the development methodology. -->
 
-**Solution:** Context7 MCP server fetches up-to-date documentation.
+### Planning Skills
+| Skill | Purpose |
+|-------|---------|
+| `project-planning` | New project: interview → project.md (PK) + features.md + roadmap.md (backlog) |
+| `user-spec-planning` | Feature requirements: interview → user-spec.md |
+| `tech-spec-planning` | Architecture: research → tech-spec.md |
+| `task-decomposition` | Decompose tech-spec into atomic task files |
 
-**How it works:**
-1. Agent encounters unfamiliar/recent API
-2. Agent uses Context7 to fetch latest docs
-3. Agent implements using current best practices
+### Execution Skills
+| Skill | Purpose |
+|-------|---------|
+| `code-writing` | TDD cycle: plan → tests → code → review |
+| `prompt-master` | LLM prompt engineering: write, improve, verify prompts |
+| `feature-execution` | Team lead dispatches agents by wave; teammates commit own code, lead commits statuses |
+| `pre-deploy-qa` | Pre-deploy acceptance testing: tests + acceptance criteria |
+| `post-deploy-qa` | Post-deploy verification on live environment via MCP tools |
 
-**Setup:** Mention Context7 availability in `.claude/skills/project-knowledge/references/architecture.md`:
-```markdown
-## Documentation Access
-- Context7 MCP server available for real-time documentation
-```
+### Quality & Review Skills
+| Skill | Purpose |
+|-------|---------|
+| `code-reviewing` | 10-dimension code review methodology |
+| `security-auditor` | OWASP Top 10 security analysis |
+| `test-master` | Testing strategy: when to use which tests |
 
-**Benefits:**
-- Always current documentation
-- Recent framework versions supported
-- New API patterns learned
-
----
-
-## Bundled Resources
-
-### Guides (Detailed Procedures)
-
-**Core Methodology:**
-- [overview.md](guides/overview.md) - Methodology overview and key concepts
-- [folder-structure.md](guides/folder-structure.md) - Complete folder structure guide
-- [project-knowledge-skill.md](guides/project-knowledge-skill.md) - Project knowledge skill detailed guide
-- [work-items.md](guides/work-items.md) - Work items structure and management
-
-**Workflows:**
-- [workflow-new-project.md](guides/workflow-new-project.md) - New project from scratch
-- [workflow-onboarding.md](guides/workflow-onboarding.md) - Onboarding existing project
-- [workflow-feature-dev.md](guides/workflow-feature-dev.md) - Daily feature development
-
-**Development Environment:**
-- [vps-setup.md](guides/vps-setup.md) - VPS reference guide (server info, SSH config, tmux, troubleshooting)
-- [workflow-copy-to-vps.md](guides/workflow-copy-to-vps.md) - Copy project to VPS for dual-environment development
-
-### References (Quick Lookup)
-
-- [key-concepts.md](references/key-concepts.md) - Deep dive into methodology concepts
-- [workflow-comparison.md](references/workflow-comparison.md) - Side-by-side workflow comparison
-- [command-sequences.md](references/command-sequences.md) - Quick command reference
-- [troubleshooting.md](references/troubleshooting.md) - Common issues and solutions
+### Meta Skills
+| Skill | Purpose |
+|-------|---------|
+| `methodology` | This skill — how the process works |
+| `documentation-writing` | Manage Project Knowledge files |
+| `skill-master` | Create and maintain quality skills |
+| `infrastructure-setup` | Framework init, Docker, pre-commit hooks, testing setup |
+| `deploy-pipeline` | CI/CD pipelines, deployment config, automated deploy |
+| `prompt-master` | Effective prompts for LLMs (also an execution skill) |
+| `skill-test-designer` | Design test scenarios for skills |
+| `skill-tester` | Execute skill test scenarios |
 
 ---
 
-## Related Skills
+## Agents
 
-- **infrastructure** - For setting up CI/CD, Docker, testing infrastructure
-- **testing** - For comprehensive testing strategy (smoke, unit, integration, E2E)
-- **command-manager** - For creating and managing slash commands
-- **skill-creator** - For creating new skills
+Agents are isolated subprocesses with fresh context. They receive input, do one job, return structured output.
+
+### Validators (run during spec/task creation)
+- `userspec-quality-validator` — document quality and completeness
+- `userspec-adequacy-validator` — solution feasibility
+- `interview-completeness-checker` — interview coverage gaps
+- `tech-spec-validator` — template compliance
+- `skeptic` — detects mirages (non-existent files/functions/APIs)
+- `completeness-validator` — bidirectional requirements traceability, over/underengineering, solution depth
+- `task-validator` — task template compliance
+- `task-creator` — generates task files from tech-spec
+- `reality-checker` — validates tasks against codebase
+
+### Reviewers (run during/after code writing)
+- `code-reviewer` — code quality across 10 dimensions
+- `test-reviewer` — test quality analysis with concrete fixes
+- `security-auditor` — OWASP Top 10, auth, input validation
+- `prompt-reviewer` — prompt quality against prompt-master principles
+- `documentation-reviewer` — project-knowledge quality against documentation-writing principles
+- `deploy-reviewer` — CI/CD pipeline and deployment configuration quality
+- `infrastructure-reviewer` — folder structure, Docker, pre-commit hooks, .gitignore
+
+### Research
+- `code-researcher` — codebase research for features (files, patterns, tests, integrations, risks)
+
+### QA
+- `pre-deploy-qa` — pre-deploy acceptance testing (tests + acceptance criteria)
+- `post-deploy-qa` — post-deploy verification on live environment (MCP tools, AVP)
+
+### Meta
+- `skill-checker` — validates skills against skill-master standards
 
 ---
 
-## Summary
+## Commands Reference
 
-This skill ensures:
-- ✅ Clear workflow selection based on project stage
-- ✅ Consistent project structure across all projects
-- ✅ Proper context organization (7 files + work items)
-- ✅ Spec-driven development (User Spec → Tech Spec → Tasks)
-- ✅ Just-In-Time context loading
-- ✅ Git-friendly documentation
-- ✅ Agent orchestration for quality
+| Command | Purpose |
+|---------|---------|
+| `/new-user-spec` | Interview → user-spec.md |
+| `/new-tech-spec` | Research → tech-spec.md |
+| `/decompose-tech-spec` | Tech-spec → task files |
+| `/do-task` | Execute single task with quality gates |
+| `/do-feature` | Execute all tasks via agent teams |
+| `/done` | Update PK, archive feature |
+| `/write-code` | Ad-hoc coding with TDD and reviews |
+| `/init-project` | Initialize new project with template, git, GitHub |
+| `/init-project-knowledge` | Fill all project documentation via project-planning skill |
 
-**Remember:** Methodology provides the "when" and "why". Infrastructure and testing skills provide the "how".
+---
+
+## Workflow Quick Start
+
+**New project:**
+`/init-project` → `/init-project-knowledge` (interview + fill all docs) → start features
+
+**New feature:**
+`/new-user-spec` → `/new-tech-spec` → `/decompose-tech-spec` → `/do-feature` or `/do-task` → `/done`
+
+**Ad-hoc coding (no spec):**
+`/write-code`
+
+To understand how a specific skill works internally, read its SKILL.md directly.

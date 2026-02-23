@@ -1,7 +1,7 @@
-# Architecture Context
+# Architecture
 
 ## Purpose
-This file provides technical architecture overview for AI agents. Helps agents understand HOW the system is built.
+Technical architecture overview for AI agents. Helps agents understand HOW the system is built.
 
 ---
 
@@ -60,16 +60,8 @@ This file provides technical architecture overview for AI agents. Helps agents u
 **[Service name - e.g., "Stripe"]**
 - **Purpose:** [What we use it for - e.g., "Payment processing for subscriptions"]
 - **Auth method:** [How we authenticate - e.g., "API key in STRIPE_SECRET_KEY env var"]
-- **Docs:** [Link to relevant docs if needed]
 
-**[Service name - e.g., "SendGrid"]**
-- **Purpose:** [What we use it for - e.g., "Transactional emails"]
-- **Auth method:** [How we authenticate - e.g., "API key in SENDGRID_API_KEY"]
-- **Docs:** [Link to relevant docs if needed]
-
-<!-- Add all external services. Include auth method so agents know how to make API calls -->
-
-<!-- If no external integrations, write: "None - this project has no external API dependencies" -->
+<!-- If no external integrations, write: "None - no external API dependencies" -->
 
 ---
 
@@ -77,4 +69,51 @@ This file provides technical architecture overview for AI agents. Helps agents u
 
 [Describe in 2-4 sentences how data moves through the system. Focus on the main flow, not edge cases.]
 
-<!-- Example: "User submits form → Frontend validates with Zod → POST to /api/users → Backend validates again → Save to PostgreSQL → Return user object → Update UI. Authentication uses JWT tokens stored in httpOnly cookies." -->
+<!-- Example: "User submits form → Frontend validates with Zod → POST to /api/users → Backend validates again → Save to PostgreSQL → Return user object → Update UI." -->
+
+---
+
+## Data Model
+
+<!--
+This section describes database/storage architecture.
+SCALING HINT: If this section grows beyond ~80 lines, extract to a separate references/database.md and link from here.
+-->
+
+**Database:** [Type - e.g., "PostgreSQL 15" / "MongoDB" / "Not applicable"]
+
+### Main Tables/Collections
+
+[List key tables/collections and their relationships - keep it brief]
+
+**[table_name or CollectionName]**
+- Purpose: [What this stores - e.g., "User accounts and profiles"]
+- Key fields: [List 3-5 most important fields]
+- Relationships: [Links to other tables - e.g., "users.id → orders.user_id"]
+
+<!-- Add main tables. Skip junction/helper tables unless critical -->
+
+### Key Constraints
+
+[Only constraints that would cause errors if violated]
+
+- **Unique constraints:** [e.g., "users.email must be unique"]
+- **Foreign keys:** [e.g., "orders.user_id → users.id (ON DELETE CASCADE)"]
+- **Required fields:** [e.g., "users: email, password_hash are NOT NULL"]
+
+### Migration Strategy
+
+**Tool:** [e.g., "Prisma Migrate" / "Alembic" / "Django migrations" / "Manual SQL scripts"]
+
+**Process:** [Brief - e.g., "Run `npm run migrate` before deploy. Migrations in /prisma/migrations/. Never edit old migrations."]
+
+### Sensitive Data
+
+[Fields containing PII or secrets - important for security]
+
+**PII fields:**
+- [table.field - e.g., "users.email"]
+- [table.field - e.g., "users.phone_number"]
+
+<!-- If no sensitive data, write "No PII stored" -->
+<!-- If using alternative storage (localStorage, file system, Chrome Storage API), describe it here instead of tables -->

@@ -1,31 +1,29 @@
-# Deployment Context
+# Deployment & Operations
 
 ## Purpose
-This file describes deployment process and infrastructure for AI agents. Helps agents understand deployment requirements and constraints.
+Deployment process, infrastructure, and production operations for AI agents.
 
 ---
 
 ## Deployment Platform
 
-**Platform:** [Where it deploys - e.g., "Vercel" / "Railway" / "AWS EC2" / "Chrome Web Store" / "VPS"]
+**Platform:** [Where it deploys - e.g., "Vercel" / "Railway" / "AWS EC2" / "VPS"]
 
 **Type:** [e.g., "Serverless" / "Container (Docker)" / "Static hosting" / "Browser extension"]
 
-**Why this platform:** [One reason - e.g., "Free tier covers our needs" / "Direct GitHub integration" / "Need full server control"]
+**Why this platform:** [One reason - e.g., "Free tier covers our needs" / "Need full server control"]
 
 ---
 
 ## Access Information
 
-[How to access the deployment infrastructure]
-
 **SSH Access:**
-- Production: `ssh user@server-ip` [e.g., `ssh root@123.45.67.89` or `ssh deploy@prod.example.com`]
-- Staging: `ssh user@staging-ip` (if applicable)
+- Production: `ssh user@server-ip` [e.g., `ssh root@123.45.67.89`]
+- Staging: [if applicable]
 
-> If not configured, agent will request: server address, username, and port (default 22).
+> If not configured, agent will request: server address, username, and port.
 
-**Credentials location:** [Where deployment secrets are stored - e.g., "GitHub Actions secrets" / "1Password vault 'Production Servers'"]
+**Credentials location:** [e.g., "GitHub Actions secrets" / "1Password vault"]
 
 ---
 
@@ -35,15 +33,15 @@ This file describes deployment process and infrastructure for AI agents. Helps a
 
 [List all required environment variables with their purpose - NO VALUES]
 
-<!-- Keep .env.example file updated with all variables. Comment each variable's purpose in that file. -->
+<!-- Keep .env.example updated. Comment each variable's purpose in that file. -->
 
 ---
 
 ## Deployment Triggers
 
-**Production:** [e.g., "Auto-deploy on push to `main` after tests pass" / "Manual deploy via button"]
+**Production:** [e.g., "Auto-deploy on push to `main` after tests pass"]
 
-**Staging:** [e.g., "Auto-deploy on push to `dev`" / "Not configured"]
+**Staging:** [e.g., "Auto-deploy on push to `dev`"]
 
 **Preview:** [e.g., "Auto-deploy for every PR" / "Not configured"]
 
@@ -51,7 +49,7 @@ This file describes deployment process and infrastructure for AI agents. Helps a
 
 ## Pre-Deploy Checklist
 
-[Only list critical manual steps - if fully automated, write "Fully automated via CI"]
+[Only critical manual steps - if fully automated, write "Fully automated via CI"]
 
 - [ ] [e.g., "Run `npm run migrate:prod` if schema changed"]
 - [ ] [e.g., "Verify env vars set in platform dashboard"]
@@ -60,11 +58,9 @@ This file describes deployment process and infrastructure for AI agents. Helps a
 
 ## Rollback Procedure
 
-[How to undo a bad deployment]
+**Platform rollback:** [e.g., "Vercel: 'Redeploy' on previous deployment" / "VPS: `git checkout <prev-commit>`"]
 
-**Platform rollback:** [e.g., "Vercel: Use 'Redeploy' on previous deployment in dashboard" / "Railway: Click 'Rollback' on previous deploy" / "VPS: `git checkout <previous-commit> && npm run deploy`"]
-
-**Manual steps if needed:** [e.g., "If DB migration broke: Manually run rollback SQL from /migrations/rollbacks/"]
+**Manual steps if needed:** [e.g., "If DB migration broke: run rollback SQL from /migrations/rollbacks/"]
 
 **Approximate time:** [e.g., "~2 minutes" / "~10 minutes with DB rollback"]
 
@@ -72,8 +68,44 @@ This file describes deployment process and infrastructure for AI agents. Helps a
 
 ## Environments
 
-**Production:** [URL - e.g., "https://app.example.com"] - Deploys from `main` branch
+**Production:** [URL] - Deploys from `main` branch
 
-**Staging:** [URL - e.g., "https://staging.example.com"] - Deploys from `dev` branch
+**Staging:** [URL] - Deploys from `dev` branch
 
 <!-- If single environment, only list Production -->
+
+---
+
+## Monitoring & Observability
+
+<!--
+SCALING HINT: If this section grows beyond ~80 lines, extract to references/monitoring.md.
+If no monitoring configured, write: "Logs output to stdout only. No error tracking configured."
+-->
+
+### Logging
+
+**Where:** [e.g., "stdout (Docker logs)" / "CloudWatch" / "Local files"]
+**Format:** [e.g., "JSON structured" / "Plain text" / "Default framework logging"]
+
+### Error Tracking
+
+**Tool:** [e.g., "Sentry" / "Rollbar" / "None"]
+**Config:** [e.g., "SENTRY_DSN in .env" / "Not configured"]
+
+### Health Checks
+
+**Endpoint:** [e.g., "GET /health" / "None"]
+**Checks:** [e.g., "DB connectivity, external API status" / "N/A"]
+
+<!-- Optional sections below — delete if not applicable -->
+
+### Metrics
+
+**Analytics:** [e.g., "Google Analytics" / "Vercel Analytics" / "None"]
+**Key metrics:** [e.g., "API response time, error rate" / "N/A"]
+
+### Alerts
+
+**Tool:** [e.g., "Sentry email alerts" / "PagerDuty" / "None"]
+**Rules:** [e.g., "Error rate > 5%" / "N/A"]

@@ -1,7 +1,12 @@
 # UX Guidelines
 
+<!--
+OPTIONAL FILE — DELETE if project has no significant UI (CLI tools, bots with minimal text, backend-only).
+For projects with minimal UI, add a brief "UX" section in patterns.md instead.
+-->
+
 ## Purpose
-This file defines UX standards and user-facing communication for AI agents. Helps agents write consistent UI text and follow design patterns.
+UX standards and user-facing communication for AI agents. Helps agents write consistent UI text and follow design patterns.
 
 ---
 

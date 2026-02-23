@@ -33,13 +33,18 @@ This file provides high-level project overview for AI agents. Helps agents under
 
 ## Key Features
 
-[List 3-5 core capabilities - only the most important ones]
+[List 3-5 core capabilities - only the most important ones. Details belong in project backlog.]
 
 - **[Feature 1 name]** - [What it does in 1 sentence]
 - **[Feature 2 name]** - [What it does in 1 sentence]
 - **[Feature 3 name]** - [What it does in 1 sentence]
 - **[Feature 4 name]** - [What it does in 1 sentence]
 - **[Feature 5 name]** - [What it does in 1 sentence]
+
+<!--
+Feature backlog, detailed roadmap, and development phases live in the project backlog
+(see CLAUDE.md for backlog path), not here. This file is a stable overview.
+-->
 
 ---
 
