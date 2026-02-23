@@ -1,203 +1,196 @@
 # Claude Code Framework
 
-Фреймворк для эффективной работы с Claude Code — набор skills, commands и agents для AI-First разработки.
+Фреймворк для AI-First разработки с Claude Code — 19 skills, 19 агентов, 9 команд.
 
 ## Что это?
 
-Коллекция методологий, автоматизаций и шаблонов для Claude Code CLI. Решает ключевую проблему — **потерю контекста между сессиями** через:
+Коллекция методологий, автоматизаций и шаблонов для [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code). Решает ключевую проблему — **потерю контекста между сессиями** через:
 
 - Распределённую базу знаний вместо монолитного CLAUDE.md
-- Spec-driven workflow (Context → User Spec → Tech Spec → Tasks → Code)
-- Оркестрацию специализированных агентов
-- Автоматизацию качества (code review, тесты, security audit)
+- Spec-driven pipeline: Context → User Spec → Tech Spec → Tasks → Code
+- Оркестрацию специализированных агентов с quality gates
+- Автоматизацию качества на каждом этапе (review, тесты, security audit)
 
-## Установка
+## Что здесь лежит
 
-```bash
-# Вариант 1: Скопировать в существующую ~/.claude/
-git clone https://github.com/pavel-molyanov/claude-code-framework.git
-cp -r claude-code-framework/* ~/.claude/
+| Папка | Описание |
+|---|---|
+| `skills/` | Модульные пакеты знаний — методологии, workflow, гайды |
+| `agents/` | Специализированные субагенты для валидации, ревью, QA |
+| `commands/` | Slash-команды (`/init-project`, `/do-task`, ...) |
+| `shared/` | Шаблоны проектов, интервью, work-директорий |
+| `CLAUDE.md` | Пример глобального CLAUDE.md для методологии |
 
-# Вариант 2: Клонировать напрямую (если ~/.claude/ пустая)
-git clone https://github.com/pavel-molyanov/claude-code-framework.git ~/.claude
+## Как работает методология
+
 ```
+Планирование проекта          Разработка фичи
+─────────────────────          ──────────────────────────────────────
+
+/init-project                  /new-user-spec
+    ↓                              ↓
+project-planning skill         Интервью → user-spec.md
+    ↓                              ↓
+documentation-writing          /new-tech-spec
+                                   ↓
+                               tech-spec.md + tasks/*.md
+                                   ↓
+                               /do-task (или /do-feature для параллельного выполнения)
+                                   ↓
+                               TDD → Code → Review → Security Audit
+                                   ↓
+                               Pre-deploy QA → Deploy → Post-deploy QA
+```
+
+Два режима выполнения:
+- **`/do-task`** — последовательно, по одной задаче за раз
+- **`/do-feature`** — параллельно, команда агентов выполняет задачи волнами
+
+## Требования
+
+- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
+- [Context7 MCP сервер](https://github.com/upstash/context7) — для доступа к актуальной документации библиотек
 
 ---
 
 ## Skills
 
-Skills — модульные пакеты знаний, которые автоматически подключаются к контексту Claude Code.
+### Планирование
 
-### methodology
+| Skill | Описание |
+|---|---|
+| `methodology` | AI-First методология: spec-driven pipeline, структура проектов, экосистема skills/agents |
+| `project-planning` | Планирование нового проекта: адаптивное интервью, заполнение project-knowledge и backlog |
+| `user-spec-planning` | Создание user-spec.md через интервью с пользователем, сканирование кодовой базы, валидация |
+| `tech-spec-planning` | Создание tech-spec.md: архитектура, решения, стратегия тестирования, план реализации |
+| `task-decomposition` | Декомпозиция tech-spec на атомарные задачи с параллельным созданием и валидацией |
 
-**AI-First методология разработки.** Описывает структуру проектов, workflow для новых и legacy проектов, правила работы с документацией. Вызывается когда нужно понять "как правильно организовать проект" или "какой workflow использовать". Содержит decision tree для выбора подхода.
+### Разработка
 
-### infrastructure
+| Skill | Описание |
+|---|---|
+| `code-writing` | Универсальный процесс написания кода: план, TDD, ревью |
+| `feature-execution` | Оркестрация фичи как тимлид: агенты по волнам, циклы ревью, коммит за волну |
+| `infrastructure-setup` | Настройка инфраструктуры: фреймворк, Docker, pre-commit hooks, тесты, .gitignore |
+| `deploy-pipeline` | Настройка CI/CD: GitHub Actions, деплой на платформы, управление секретами |
 
-**Настройка DevOps инфраструктуры.** Покрывает CI/CD (GitHub Actions), Docker, pre-commit hooks (gitleaks для защиты от утечки секретов), тестовую инфраструктуру. Вызывается при создании нового проекта или добавлении автодеплоя. Содержит готовые шаблоны конфигов.
+### Качество
 
-### testing
+| Skill | Описание |
+|---|---|
+| `code-reviewing` | Методология code review: 10 измерений проверки, процесс, стандарты качества |
+| `test-master` | Методология тестирования: тестовая пирамида, когда какие тесты писать, стратегия |
+| `security-auditor` | Аудит безопасности по OWASP Top 10: SQL injection, XSS, auth, криптография |
+| `pre-deploy-qa` | Приёмочное тестирование перед деплоем: запуск тестов, проверка acceptance criteria |
+| `post-deploy-qa` | Пост-деплой верификация: AVP на живом окружении через MCP-инструменты |
 
-**Стратегия тестирования.** Описывает тестовую пирамиду: smoke → unit → integration → E2E. Объясняет когда какие тесты писать, как организовать, какой coverage нужен. Вызывается при планировании тестов или когда непонятно "нужны ли тесты для этого кода".
+### Документация
 
-### documentation
+| Skill | Описание |
+|---|---|
+| `documentation-writing` | Управление project-knowledge: создание, проверка, обновление базы знаний проекта |
+| `prompt-master` | Гайд по написанию эффективных промптов для LLM |
 
-**Управление документацией проекта.** Помогает создавать, проверять и обновлять 11 файлов в `.claude/skills/project-knowledge/references/`. Проводит аудит на bloat (лишний код в доках, очевидная информация). Вызывается при "заполни документацию" или "проверь доки".
+### Мета
 
-### project-planning
-
-**Планирование нового проекта.** Проводит адаптивное интервью и заполняет три файла: project.md (что строим), features.md (полный список фич), roadmap.md (план разработки). Вызывается в начале нового проекта для формирования vision.
-
-### user-spec-planning
-
-**Создание user specification.** Проводит интервью для понимания фичи/бага с точки зрения пользователя. Выясняет проблему, сценарии использования, критерии готовности, edge cases. Результат — user-spec.md на русском языке для согласования с заказчиком.
-
-### tech-spec-planning
-
-**Создание технической спецификации.** На основе user-spec создаёт tech-spec.md с архитектурными решениями и декомпозирует на атомарные задачи (tasks/*.md). Каждая задача — non-breaking increment, готовый к реализации. Включает 3-уровневую валидацию через subagent (tech-spec, decomposition, каждый task).
-
-### task-execution
-
-**Выполнение задач с quality gates.** Реализует задачи из tasks/*.md через 3-фазовый TDD workflow:
-- **PRE-TASK**: Валидация задачи, чтение context files (architecture, patterns, specs), review подхода
-- **IMPLEMENTATION**: Тесты первые → код → запуск тестов → проверка acceptance criteria
-- **POST-TASK**: Запуск тестов, опциональные reviews (code-reviewer, security-auditor), коммит, обновление статуса
-
-Вызывается командой `/do-task` или фразой "выполни задачу".
-
-### command-manager
-
-**Управление slash-командами.** Создаёт, редактирует, рефакторит и удаляет команды в `~/.claude/commands/`. Проверяет зависимости перед удалением, валидирует структуру. Содержит скрипты для анализа и генерации индекса команд.
-
-### skill-creator
-
-**Создание новых skills.** Гайд по структуре skill (SKILL.md + bundled resources), правилам написания description для автотриггера, progressive disclosure. Содержит скрипты инициализации и упаковки skills.
+| Skill | Описание |
+|---|---|
+| `skill-master` | Гайд по созданию и обновлению skills |
+| `skill-test-designer` | Проектирование тестовых сценариев для skills через интервью |
+| `skill-tester` | Запуск тестовых сценариев с параллельными раннерами и детальным отчётом |
 
 ---
 
-## Commands
+## Агенты
 
-Slash-команды для автоматизации рутинных задач. Вызываются через `/command-name`.
+Субагенты запускаются через Task tool для специализированных задач.
 
-### /init-project
+### Валидаторы
 
-**Инициализация нового проекта.** Копирует шаблон из `shared/templates/new-project/`, создаёт структуру `.claude/skills/project-knowledge/`, инициализирует git, создаёт GitHub репозиторий (private), регистрирует проект. Поддерживает миграцию legacy-проектов (перемещает старый код в `old/`).
+| Агент | Описание |
+|---|---|
+| `tech-spec-validator` | Валидация структуры tech-spec, секций, стандартов |
+| `task-validator` | Валидация task-файлов по шаблону и правилам |
+| `task-creator` | Создание task-файлов из секции Implementation Tasks tech-spec |
+| `completeness-validator` | Двусторонняя трассировка требований: user-spec ↔ tech-spec/tasks |
+| `reality-checker` | Проверка task-файлов на соответствие реальной кодовой базе |
+| `skeptic` | Верификация фактов в tech-spec/tasks — поиск миражей и несуществующих файлов |
+| `userspec-quality-validator` | Валидация качества user-spec: структура, покрытие, тестируемость критериев |
+| `userspec-adequacy-validator` | Валидация адекватности user-spec: осуществимость, масштаб, over/under-engineering |
+| `interview-completeness-checker` | Оценка полноты интервью для user-spec planning |
+| `skill-checker` | Валидация skills по стандартам skill-master |
 
-### /init-context
+### Ревьюеры
 
-**Заполнение технического контекста.** После планирования проекта заполняет 4-6 файлов: architecture.md, database.md, deployment.md, ux-guidelines.md. Использует Context7 для проверки актуальности tech stack. Проводит интервью с пользователем для уточнения предпочтений.
+| Агент | Описание |
+|---|---|
+| `code-reviewer` | Code review реализации: архитектура, читаемость, error handling, тесты |
+| `code-researcher` | Исследование кодовой базы: файлы, паттерны, тесты, интеграции, риски |
+| `test-reviewer` | Анализ качества тестов: находит проблемы и даёт конкретные исправления |
+| `deploy-reviewer` | Ревью CI/CD pipeline: GitHub Actions, secrets management, конфигурация |
+| `infrastructure-reviewer` | Ревью инфраструктуры: структура, Docker, pre-commit hooks, .gitignore |
+| `prompt-reviewer` | Ревью качества LLM-промптов по принципам prompt-master |
+| `security-auditor` | Аудит безопасности по OWASP Top 10: код и архитектурные решения |
 
-### /new-user-spec
+### QA
 
-**Создание user specification.** Обёртка над skill `user-spec-planning`. Проводит интервью, создаёт `work/{feature}/user-spec.md`. Используется когда нужно продумать фичу с бизнес-стороны перед техническим планированием.
-
-### /new-tech-spec
-
-**Создание технической спецификации.** Обёртка над skill `tech-spec-planning`. Читает user-spec, создаёт tech-spec.md и tasks/*.md. Используется после согласования user-spec для перехода к реализации.
-
-### /do-task
-
-**Выполнение задачи.** Обёртка над skill `task-execution`. Реализует одну задачу из tasks/*.md с полным TDD workflow и quality gates. Используется после создания tech-spec для пошаговой реализации фичи.
-
-### /plan-task-waves
-
-**Планирование параллельного выполнения.** Анализирует зависимости между задачами и группирует их в "волны" для параллельной реализации. Показывает какие задачи можно выполнять одновременно, а какие должны идти последовательно.
-
-### /project-context
-
-**Загрузка контекста проекта.** Читает ключевые файлы: project.md, architecture.md, git-workflow.md, deployment.md. Используется в начале сессии для быстрого погружения в проект. Указывает где искать дополнительную информацию.
-
-### /meta-context
-
-**Контекст для работы в ~/.claude/.** Объясняет что это мета-проект для разработки методологии, какая структура, какие файлы критичны. Предупреждает что изменения в CLAUDE.md влияют на все проекты.
-
----
-
-## Agents
-
-Специализированные субагенты, запускаемые через Task tool.
-
-### code-developer
-
-**Реализация задач по спецификации.** Читает task.md и context-файлы, пишет код следуя patterns.md, создаёт тесты, проверяет acceptance criteria, запускает тесты. Использует Context7 для актуальной документации. Возвращает JSON с результатами.
-
-### code-reviewer
-
-**Code review реализации.** Проверяет архитектуру, separation of concerns, читаемость, error handling, типизацию, тестовое покрытие, безопасность, производительность. Проверяет cross-file consistency (правильность вызовов функций между файлами). Возвращает статус: approved / approved_with_suggestions / changes_required.
-
-### secret-scanner
-
-**Сканирование на секреты перед коммитом.** Ищет API keys, токены, пароли, private keys, connection strings. Различает реальные секреты от placeholder'ов. Запускается автоматически перед git commit. Возвращает passed/failed с детальными findings.
-
-### security-auditor
-
-**Аудит безопасности по OWASP Top 10.** Проверяет SQL injection, XSS, CSRF, аутентификацию, авторизацию, криптографию, зависимости (npm audit). Запускается после code-reviewer для кода с user input, auth, database queries. Возвращает findings с severity и рекомендациями.
+| Агент | Описание |
+|---|---|
+| `pre-deploy-qa` | Приёмочное тестирование: запуск тестов, проверка acceptance criteria |
+| `post-deploy-qa` | Пост-деплой верификация на живом окружении через MCP-инструменты |
 
 ---
 
-## Структура проекта
+## Команды
 
-```
-~/.claude/
-├── skills/                 # Методологии и knowledge base
-│   ├── methodology/        # AI-First разработка
-│   ├── infrastructure/     # DevOps и деплой
-│   ├── testing/            # Стратегии тестирования
-│   ├── documentation/      # Управление документацией
-│   ├── project-planning/   # Планирование проектов
-│   ├── user-spec-planning/ # User specifications
-│   ├── tech-spec-planning/ # Technical specifications
-│   ├── task-execution/     # Выполнение задач с TDD
-│   ├── command-manager/    # Создание команд
-│   └── skill-creator/      # Создание skills
-│
-├── commands/               # Slash-команды
-├── agents/                 # Субагенты
-├── shared/templates/       # Шаблоны проектов
-├── hooks/                  # Git/tool hooks
-├── scripts/                # Утилиты
-├── CLAUDE.md               # Глобальные инструкции
-└── .gitignore
-```
-
-## Структура проекта после /init-project
-
-```
-my-project/
-├── .claude/skills/project-knowledge/references/
-│   ├── project.md          # Описание проекта
-│   ├── architecture.md     # Tech stack
-│   ├── database.md         # База данных
-│   ├── deployment.md       # Деплой
-│   ├── patterns.md         # Паттерны кода
-│   ├── git-workflow.md     # Git стратегия
-│   └── ux-guidelines.md    # UI/UX
-│
-├── work/                   # Рабочие items
-│   └── feature-name/
-│       ├── user-spec.md    # Что делаем (RU)
-│       ├── tech-spec.md    # Как делаем (EN)
-│       └── tasks/          # Атомарные задачи
-│
-├── CLAUDE.md               # Инструкции для Claude
-└── README.md
-```
+| Команда | Описание |
+|---|---|
+| `/init-project` | Инициализация проекта: шаблон, git, GitHub |
+| `/init-project-knowledge` | Первичное заполнение документации проекта |
+| `/new-user-spec` | Создание user specification через интервью |
+| `/new-tech-spec` | Создание технической спецификации и задач |
+| `/decompose-tech-spec` | Декомпозиция tech-spec на атомарные задачи |
+| `/do-task` | Выполнение задачи с TDD и quality gates |
+| `/do-feature` | Параллельное выполнение фичи командой агентов |
+| `/write-code` | Написание кода с процессом качества |
+| `/done` | Финализация фичи: обновление документации, архивация |
 
 ---
 
-## Workflow
+## Структура репозитория
 
-### Новый проект
-1. `/init-project` — создать структуру
-2. `project-planning` skill — интервью, заполнить project.md + features.md + roadmap.md
-3. `/init-context` — заполнить технический контекст
-
-### Разработка фичи
-1. `/new-user-spec` — создать user specification
-2. `/new-tech-spec` — создать tech spec + tasks
-3. `/plan-task-waves` — (опционально) спланировать параллельное выполнение
-4. `/do-task` — выполнять задачи по одной с TDD и quality gates
-5. Review через `code-reviewer` + `security-auditor` (автоматически в /do-task)
+```
+claude-code-framework/
+├── CLAUDE.md                          # Пример глобального CLAUDE.md
+├── skills/
+│   ├── methodology/                   # AI-First методология
+│   ├── project-planning/              # Планирование проектов
+│   ├── user-spec-planning/            # User specifications
+│   ├── tech-spec-planning/            # Technical specifications
+│   ├── task-decomposition/            # Декомпозиция на задачи
+│   ├── code-writing/                  # Процесс написания кода
+│   ├── code-reviewing/                # Методология code review
+│   ├── feature-execution/             # Оркестрация фичи
+│   ├── infrastructure-setup/          # DevOps инфраструктура
+│   ├── deploy-pipeline/               # CI/CD pipeline
+│   ├── test-master/                   # Стратегия тестирования
+│   ├── security-auditor/              # Аудит безопасности
+│   ├── pre-deploy-qa/                 # Pre-deploy QA
+│   ├── post-deploy-qa/                # Post-deploy QA
+│   ├── documentation-writing/         # Управление документацией
+│   ├── prompt-master/                 # Промпт-инжиниринг
+│   ├── skill-master/                  # Создание skills
+│   ├── skill-test-designer/           # Тесты для skills
+│   └── skill-tester/                  # Запуск тестов skills
+├── agents/                            # 19 субагентов
+├── commands/                          # 9 slash-команд
+└── shared/
+    ├── templates/
+    │   ├── new-project/               # Шаблон нового проекта
+    │   └── infrastructure/            # Шаблоны инфраструктуры
+    ├── interview-templates/           # Шаблоны интервью
+    └── work-templates/                # Шаблоны work-директории
+```
 
 ---
 
