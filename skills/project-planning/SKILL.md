@@ -2,7 +2,7 @@
 name: project-planning
 description: |
   Plan new projects: adaptive interview, tech decisions,
-  fill all project documentation (project-knowledge + backlog) in one session.
+  fill all project documentation (project-knowledge) in one session.
 
   Use when: "сделай описание проекта", "запиши описание проекта в документацию",
   "проведи со мной интервью для описания проекта", "заполни документацию проекта",
@@ -25,13 +25,7 @@ Conduct adaptive interview → make tech decisions → fill all project document
 - **deployment.md** — platform, environment, CI/CD, monitoring
 - **ux-guidelines.md** — only if project has significant UI
 
-**Project Backlog** (path from CLAUDE.md `Backlog:` field):
-- **features.md** — complete feature inventory with priorities
-- **roadmap.md** — development phases and milestones (or minimal if simple project)
-
 ## Interview Methodology
-
-**Communication:** Conversational Russian.
 
 **One question at a time.** Ask one question, wait for the answer, then form the next question based on the response.
 
@@ -87,11 +81,11 @@ Then ask adaptive questions to cover three areas:
 - 3-5 key features (high-level only)
 - What it explicitly doesn't do (out of scope)
 
-**Features:**
-- Complete feature list with descriptions
+**Features & MVP:**
+- Key features with descriptions
+- What's included in MVP (launch scope)
+- What comes later (post-launch ideas) — note these for the backlog
 - Priority for each: Critical / Important / Nice-to-have
-- Why each feature matters (user value)
-- Dependencies between features (if relevant)
 
 **Development Approach:**
 - All at once or phased?
@@ -102,7 +96,7 @@ Then ask adaptive questions to cover three areas:
 
 Move to Phase 2 when you can:
 - Write a clear, non-vague project.md
-- List all features with priorities
+- List key features with priorities and MVP scope
 - Describe the development approach
 
 Not every answer needs to be perfect. TBD is acceptable for optional aspects.
@@ -149,9 +143,9 @@ Use Edit tool to replace template placeholders with real content. Content langua
 
 **project.md** — from Phase 1 interview:
 - Project overview, target audience, core problem
-- 3-5 key features only (high-level, one-line descriptions)
+- Key features with priorities and MVP scope
+- Post-launch ideas (if discussed)
 - Out of scope
-- Details belong in features.md, not here
 
 **architecture.md** — from Phase 2 decisions + codebase analysis:
 - Tech stack with "why" for each choice
@@ -176,40 +170,14 @@ Use Edit tool to replace template placeholders with real content. Content langua
 
 **ux-guidelines.md** — only if project has significant UI. Skip entirely for CLIs, APIs, bots without custom UI.
 
-### 3.2 Backlog Files
+### 3.2 Backlog (if applicable)
 
-Read backlog path from CLAUDE.md `Backlog:` field. If field missing — ask user where to save.
+If user discussed post-launch features during the interview, save them to a backlog file.
 
-Create directory if needed:
-```bash
-BACKLOG_DIR="<path from CLAUDE.md>"
-mkdir -p "$BACKLOG_DIR"
-```
-
-**features.md** — from Phase 1 interview:
-
-Format per feature:
-```markdown
-## 1. [Feature Name]
-**Priority:** [Critical | Important | Nice-to-have]
-**Status:** Planned
-**Description:** [What it does and why]
-```
-
-Priority levels: **Critical** — blocks launch, core value. **Important** — needed for smooth operation, can launch without. **Nice-to-have** — enhances experience, can wait for v2. If everything is Critical — push back: "If you could only launch with 3 features, which ones?"
-
-Group features when >8 (by user type, subsystem, or functional area). Add dependencies only when non-obvious: `**Dependencies:** User Auth (#1)`.
-
-Features are user-facing capabilities, not implementation tasks. Wrong: "Create user button". Right: "User Management — complete CRUD".
-
-**roadmap.md** — from Phase 1 interview:
-
-Decision tree:
-- Simple project (<8 features, building all at once) → minimal: "Building all features simultaneously. See features.md for priorities."
-- Phased development, >10 features, or complex dependencies → detailed with phases, milestones, exit criteria
-- Migration project → always detailed + migration context (current system, rollback plan, pre/post-migration phases)
-
-No time estimates — milestones and exit criteria only.
+1. Check CLAUDE.md for a `Backlog:` path — use it if present
+2. If no backlog path found — ask user where to create it (e.g., `docs/backlog.md`, `BACKLOG.md`)
+3. After creating the backlog file, add `Backlog: <path>` to CLAUDE.md so it's not lost
+4. If user declines — skip, the information is already captured in project.md
 
 ### 3.3 Checkpoint
 
@@ -222,9 +190,8 @@ All output files from "Output Files" section created. No template placeholders r
 Before presenting to user, verify:
 - All output files listed in "Output Files" section were created
 - No template placeholders remain (search for `[Project Name]`, `[Description]`, etc.)
-- features.md contains every feature discussed in interview
+- project.md contains all key features discussed in interview
 - architecture.md tech stack matches user-approved decisions from Phase 2
-- roadmap.md complexity matches project scope (minimal for simple, detailed for phased/migration)
 
 If any check fails — fix before proceeding.
 
@@ -245,14 +212,10 @@ Tell user (Russian):
 - [patterns.md](.claude/skills/project-knowledge/references/patterns.md) — git workflow
 - [deployment.md](.claude/skills/project-knowledge/references/deployment.md) — деплой
 
-**Backlog:**
-- [features.md](<backlog_path>/features.md) — фичи с приоритетами
-- [roadmap.md](<backlog_path>/roadmap.md) — план разработки
-
 Посмотри. Всё правильно? Есть что изменить?
 ```
 
-Include ux-guidelines.md in the list if it was created.
+Include ux-guidelines.md and backlog file in the list if they were created.
 
 ### 4.3 Iterate
 
@@ -264,11 +227,9 @@ Include ux-guidelines.md in the list if it was created.
 
 After approval, ask: "Закоммитить?"
 
-If yes:
+If yes — commit all created documentation files:
 ```bash
-git add .claude/skills/project-knowledge/references/*.md \
-       <backlog_path>/features.md \
-       <backlog_path>/roadmap.md
+git add .claude/skills/project-knowledge/references/*.md
 
 git commit -m "$(cat <<'EOF'
 feat: fill project documentation
@@ -277,5 +238,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```
+
+Include backlog file in git add if it was created.
 
 Final message: "Документация заполнена! Можно начинать разработку."

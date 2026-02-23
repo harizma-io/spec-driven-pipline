@@ -232,12 +232,12 @@ Agent uses Context7 MCP to fetch current library documentation instead of relyin
 
 ## Skills Ecosystem
 
-<!-- Some items excluded from catalog: internal tooling not part of the development methodology. -->
+<!-- Exclude from methodology catalogs: items for private repo management (public-repo skill, public-repo-scanner agent, sync-public command). They are tooling for maintaining this repository, not part of the development methodology. -->
 
 ### Planning Skills
 | Skill | Purpose |
 |-------|---------|
-| `project-planning` | New project: interview → project.md (PK) + features.md + roadmap.md (backlog) |
+| `project-planning` | New project: interview → project knowledge docs (project.md, architecture.md, etc.) |
 | `user-spec-planning` | Feature requirements: interview → user-spec.md |
 | `tech-spec-planning` | Architecture: research → tech-spec.md |
 | `task-decomposition` | Decompose tech-spec into atomic task files |
