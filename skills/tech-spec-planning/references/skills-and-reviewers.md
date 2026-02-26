@@ -16,6 +16,10 @@ Used by: tech-spec-planning (Phase 4), task-decomposition (Phase 1).
 | `post-deploy-qa` | Live environment verification after deploy via MCP tools | Post-deploy task in Final Wave |
 | `prompt-master` | Writing/improving LLM prompts, prompt engineering | System prompts, user prompt templates, few-shot examples, prompt optimization |
 
+| `code-reviewing` | Full-feature code quality audit | Code Audit in Audit Wave |
+| `security-auditor` | Full-feature security audit | Security Audit in Audit Wave |
+| `test-master` | Full-feature test quality audit | Test Audit in Audit Wave |
+
 Tasks without skill (user instructions) — skill not specified, description is in the task itself. Example: "ask user to register a bot in BotFather".
 
 Prompt tasks (LLM system prompts, user templates) use `prompt-master` skill — they are NOT code-writing tasks. TDD Anchor is replaced by manual verification on sample data.
@@ -44,6 +48,9 @@ Prompt tasks (LLM system prompts, user templates) use `prompt-master` skill — 
 | `pre-deploy-qa` | none — QA is its own verification |
 | `post-deploy-qa` | none — verification result is the review |
 | `prompt-master` | `prompt-reviewer` |
+| `code-reviewing` | none — auditor IS the review (Audit Wave) |
+| `security-auditor` | none — auditor IS the review (Audit Wave) |
+| `test-master` | none — auditor IS the review (Audit Wave) |
 
 When `reviewers` field is empty in a task — fall back to the default set for that skill.
 
@@ -78,6 +85,12 @@ Security-auditor is already in the default set for code-writing. No extra action
 ```yaml
 skills: [documentation-writing]
 reviewers: [code-reviewer]
+```
+
+### Audit task (Audit Wave)
+```yaml
+skills: [code-reviewing]  # or security-auditor, test-master
+reviewers: []
 ```
 
 ### QA task (Final Wave)

@@ -34,10 +34,9 @@ Execute a spec-driven task with validation and status tracking.
 ## Step 3: Verify
 
 1. Check each acceptance criterion from task file
-2. If task has `verify: <tool>` in frontmatter → use specified tool for verification
-3. If task has "Verification Steps" → execute each:
-   - Pass → document results
-   - Fail → fix → re-run tests → re-run reviewers (new round) → re-verify
+2. If task has "Verification Steps → Smoke" → execute each smoke command, record results in decisions.md Verification section
+3. If task has "Verification Steps → User" → ask user to verify, wait for confirmation
+4. If any verification fails → fix → re-run tests → re-run reviewers (new round) → re-verify
    - After 3 failed rounds → stop, report failures to user, keep status `in_progress`
    - Tool unavailable → document, suggest manual check
 

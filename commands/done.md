@@ -37,7 +37,7 @@ Otherwise, read current PK files and update only those affected by the feature:
 - `architecture.md` — new components, changed structure, data model / schema changes
 - `patterns.md` — new project-specific patterns, testing approaches, business rules
 - `deployment.md` — deployment or monitoring changes
-- If the feature status needs updating in the project backlog (features.md / roadmap.md), note it for the user
+- If the project has a backlog file, note any status updates for the user
 
 Apply quality principles from documentation-writing skill: no code examples, no obvious content, only project-specific information.
 

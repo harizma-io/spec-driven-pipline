@@ -73,6 +73,7 @@ Check each element against current requirements from user-spec:
 - **Concurrent access**: if data is shared, is there protection? → severity `major`
 - **Fragile dependencies**: hard coupling to external services without fallback? → severity `minor`
 - **Shallow architecture**: everything in one file/function when task scale requires separation? → severity `major`
+- **Shared resource management**: if Architecture lists multiple components using the same heavy resource (ML model, DB pool, API client) but Shared Resources subsection is empty or absent → severity `major`. If Shared Resources is filled but Implementation Tasks have no designated owner task for a listed resource → severity `major`
 
 ### 8. Structural integrity
 

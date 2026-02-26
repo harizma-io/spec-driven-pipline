@@ -3,7 +3,7 @@ status: planned                    # planned -> in_progress -> done
 depends_on: []                     # номера задач-зависимостей
 wave: 1                            # волна параллельного выполнения
 skills: [code-writing]             # МАССИВ скиллов для загрузки
-verify:                            # инструмент верификации (опционально)
+verify: []                         # типы верификации: smoke, user (опционально)
 reviewers: [code-reviewer, security-auditor, test-reviewer]  # явно указать. Пусто = fallback на дефолтные три
 teammate_name:                     # косметическое имя тиммейта для agent teams (например: coder-inbox, qa-runner, deployer)
 ---
@@ -50,10 +50,19 @@ teammate_name:                     # косметическое имя тимм�
 
 ## Verification Steps
 
-<!-- How to verify task is complete. For code — run tests. For deploy — check logs. For user-action — user confirmation. -->
+### Automated
+<!-- Tests to run. Always present for code tasks. -->
+- `pytest tests/test_xxx.py -v` → all pass
 
-- Шаг 1: что проверить
-- Шаг 2: ожидаемый результат
+### Smoke
+<!-- Executable checks — agent runs before reviews. No deployment needed.
+     From tech-spec Verify-smoke. Types: command (curl, python -c), MCP tool,
+     API call, docker build, local server check, agent with test prompt.
+     Omit section if no smoke checks. -->
+
+### User
+<!-- Agent asks user to verify (UI, behavior, experience).
+     From tech-spec Verify-user. Omit section if no user checks. -->
 
 ## Details
 

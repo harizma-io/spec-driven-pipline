@@ -56,7 +56,9 @@ The full path from idea to production. Each step has a command, a skill behind i
 - Reads approved user-spec
 - Researches codebase, checks dependencies, uses Context7 for external libraries
 - Asks technical clarification questions
-- Copies tech-spec template, edits sections in place → `tech-spec.md` with architecture, decisions, testing strategy, brief Implementation Tasks (scope only — AC and TDD are added during task-decomposition) → git commit draft
+- Copies tech-spec template, edits sections in place → `tech-spec.md` with architecture (including Shared Resources for heavy objects like ML models, DB pools), decisions, testing strategy, brief Implementation Tasks (scope only — AC and TDD are added during task-decomposition) → git commit draft
+- Implementation Tasks include Verify-smoke (executable checks: curl, python -c, docker) and Verify-user (manual UI/UX checks) fields where applicable
+- Last two waves are always Audit Wave (3 parallel auditors: code, security, test) and Final Wave (QA + deploy)
 - 5 validators run in parallel (up to 3 iterations):
   - `skeptic` — detects non-existent files, functions, APIs (mirages)
   - `completeness-validator` — bidirectional requirements traceability, over/underengineering, solution depth
@@ -80,6 +82,7 @@ The full path from idea to production. Each step has a command, a skill behind i
 - 2 validators run in parallel (up to 3 iterations):
   - `task-validator` — template compliance, content quality
   - `reality-checker` — validates against actual codebase (file existence, feasibility)
+- Cross-task integration check: both validators re-run on all tasks together — catches shared resource conflicts, duplicate heavy resource init, hidden dependencies (max 2 extra iterations)
 - Git commit after each validation round
 - User approves → git commit approval
 
@@ -116,14 +119,18 @@ All tasks via agent teams. Team lead orchestrates waves of parallel work.
 
 **Process:**
 - Team lead reads tech-spec and all task files, builds execution plan
+- Checks `checkpoint.yml` — if resuming after context compaction, skips completed waves (uses decisions.md as source of truth for what actually completed)
 - Creates team via TeamCreate
 - Executes tasks wave by wave:
   - Spawns one agent per task (parallel within wave)
-  - Each teammate: follows loaded skill workflow, commits code (tests pass), sends diff to reviewers, fixes findings with commits per round (max 3 rounds), commits review reports
+  - Each teammate: follows loaded skill workflow, runs smoke verification if task has Verify-smoke (before reviews), commits code (tests pass), sends diff to reviewers, fixes findings with commits per round (max 3 rounds), commits review reports
   - Each teammate writes `decisions.md` entry
-  - Lead commits status updates (task frontmatter + decisions.md) after wave completes — code is already committed by teammates
-- QA, deploy, and post-deploy verification are regular tasks defined in the tech-spec
-- User reviews results, team shuts down
+  - Lead commits status updates (task frontmatter + decisions.md) after wave completes, updates `checkpoint.yml`
+- **Audit Wave** (always present): 3 auditors run in parallel (code-reviewer, security-auditor, test-reviewer) — review all feature code holistically. Issues found → lead spawns fixer agent, auditors become reviewers (max 3 fix rounds)
+- **Ad-hoc agents**: when lead needs work outside planned tasks (fixing audit findings, escalations), assigns matching skill + reviewers based on work type
+- **Final Wave**: QA (always), deploy + post-deploy (if applicable)
+- **Escalation**: after 3 failed fix rounds — stop, report to user, write decisions.md entry, wait for decision
+- User reviews results, team shuts down, `checkpoint.yml` deleted
 
 Tasks can be code, user-action, deploy, config, or verification. Task nature is determined by its skill + description, not a separate type field.
 
@@ -214,7 +221,8 @@ Write specifications before code. The hierarchy: User Spec → Tech Spec → Tas
 - User spec: 2 validators (quality + adequacy)
 - Tech spec: 5 validators (skeptic + completeness + security + test + template/task-quality)
 - Tasks: 2 validators (template + reality)
-- Code: 3 reviewers (code + test + security)
+- Code: 3 reviewers (code + test + security) + smoke verification (API calls, library checks, MCP tools, local runs)
+- Audit Wave: 3 auditors (code + security + test) review all feature code holistically after implementation waves
 - QA tasks: pre-deploy QA (tests + acceptance criteria), post-deploy QA (verification on live environment)
 
 Max 3 fix iterations at each stage.
@@ -228,11 +236,14 @@ Agent reads only what's needed for current task, not everything. Task files list
 ### Context7 for Library Docs
 Agent uses Context7 MCP to fetch current library documentation instead of relying on training data. Used during tech-spec research and code implementation.
 
+### Checkpoint Recovery
+Feature execution persists state to `checkpoint.yml` after each wave. A `SessionStart(compact)` hook detects context compaction during long feature executions and injects recovery context — the lead resumes from the next pending wave using checkpoint + decisions.md as source of truth.
+
 ---
 
 ## Skills Ecosystem
 
-<!-- Some items excluded from catalog: internal tooling not part of the development methodology. -->
+<!-- Exclude from methodology catalogs: items for private repo management (public-repo skill, public-repo-scanner agent, sync-public command). They are tooling for maintaining this repository, not part of the development methodology. -->
 
 ### Planning Skills
 | Skill | Purpose |
@@ -254,7 +265,7 @@ Agent uses Context7 MCP to fetch current library documentation instead of relyin
 ### Quality & Review Skills
 | Skill | Purpose |
 |-------|---------|
-| `code-reviewing` | 10-dimension code review methodology |
+| `code-reviewing` | 11-dimension code review methodology (incl. Resource Management) |
 | `security-auditor` | OWASP Top 10 security analysis |
 | `test-master` | Testing strategy: when to use which tests |
 

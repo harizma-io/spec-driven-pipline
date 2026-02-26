@@ -46,7 +46,7 @@ Every section from the tech-spec template must exist and have content:
 - `## Data Models` (or explicit "N/A")
 - `## Dependencies` with subsections `### New packages` and `### Using existing`
 - `## Testing Strategy` with `Feature size: S/M/L` specified
-- `## Agent Verification Plan` with subsections `### Verification approach`, `### Per-task verification`, `### Tools required`
+- `## Agent Verification Plan` with subsections `### Verification approach`, `### Tools required`
 - `## Risks` — table format (Risk + Mitigation)
 - `## Acceptance Criteria` — present and non-empty
 - `## Implementation Tasks` — organized by waves
@@ -69,8 +69,15 @@ Skip if Project Knowledge files are absent — create a suggestion finding.
 ## 5. Agent Verification Plan
 
 - Section exists and is not empty
-- Verification steps are concrete and executable (curl, bash, Playwright MCP, Telegram MCP — not abstract "verify it works")
-- `verify:` present only on tasks with observable, checkable output — and present on all such tasks
+- `### Verification approach` describes how smoke and post-deploy verification work
+- `### Tools required` lists MCP tools / curl / bash needed for verification
+
+## 5b. Per-task Smoke Verification
+
+- Tasks with external API integration, library initialization, Docker, LLM/prompt work, or UI should have `Verify-smoke:` or `Verify-user:` fields
+- `Verify-smoke:` contains concrete executable commands (not abstract "verify it works")
+- `Verify-user:` describes what user checks (UI, behavior, experience)
+- Tasks with purely internal logic covered by tests may omit both fields
 
 ## 6. Implementation Tasks
 
@@ -78,7 +85,7 @@ Each task contains full information:
 - **Description** — what and why (scope description, not detailed implementation steps)
 - **Skill** — specified
 - **Reviewers** — specified, not empty. Each reviewer is an existing agent (verify via Glob: `~/.claude/agents/{name}.md`)
-- **Verify** — specified if task has observable output
+- **Verify-smoke** / **Verify-user** — present if task has external integration, infra, UI, or LLM work (see section 5b)
 - **Files to modify** — concrete file paths
 - **Files to read** — concrete file paths for context
 

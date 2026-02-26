@@ -9,19 +9,18 @@
 ### Task 1: [название]
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Verify:** curl — GET /api/endpoint → 200
+- **Verify-smoke:** `curl localhost:3000/api/endpoint` → 200
 
 ### Task 2: [название]
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, test-reviewer
-- **Verify:** user — пользователь проверяет UI
+- **Verify-user:** open localhost:3000/users → form renders
 
 ## Wave 2 (зависит от Wave 1)
 
 ### Task 3: [название]
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor
-- **Verify:** bash — npm test
 
 ## Проверки, требующие участия пользователя
 

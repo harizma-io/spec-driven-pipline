@@ -5,7 +5,7 @@ description: |
   Analyzes written test code, test strategy from tech-spec, or both.
   Orchestrator specifies what to check and provides file paths.
 model: inherit
-color: green
+color: blue
 skills:
   - test-master
 allowed-tools:

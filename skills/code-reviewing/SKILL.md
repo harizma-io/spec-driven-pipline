@@ -2,7 +2,7 @@
 name: code-reviewing
 description: |
   Code review methodology and quality standards for comprehensive code analysis.
-  Use to understand WHAT and HOW to review code: 10 review dimensions, process, quality standards.
+  Use to understand WHAT and HOW to review code: 11 review dimensions, process, quality standards.
 
   Use when: "проверь код", "code review", "ревью кода", "review this code", "check code quality"
 ---
@@ -13,7 +13,7 @@ Comprehensive code review methodology for ensuring production-ready quality and 
 
 ## Review Dimensions
 
-Perform systematic analysis across these 10 dimensions:
+Perform systematic analysis across these 11 dimensions:
 
 ### 1. Architectural Patterns
 
@@ -49,20 +49,39 @@ Perform systematic analysis across these 10 dimensions:
 - Readable > clever: clear code is better than short but cryptic code
 - No magic numbers: extract to named constants (`MAX_UPLOAD_SIZE` not `5242880`)
 
-### 4. Error Handling
+### 4. Error Handling & Logging
 
 - Examine error propagation strategy
 - Verify appropriate use of try-catch blocks
 - Check error messages clarity and actionability
 - Assess graceful degradation and fallback mechanisms
-- Review logging practices for debugging and monitoring
 
-**Good practices:**
+**Good practices (error handling):**
 - Always use try-catch for operations that can fail (API calls, DB operations, file I/O)
-- Log with context: include user_id, action, resource_id, error message, stack trace
 - Don't swallow errors: always re-throw after logging (unless explicitly handling)
 - Fail fast: validate inputs early; throw errors immediately when invalid
 - User-friendly errors: show generic message to users, log details internally
+
+**Logging review checklist:**
+- Key operations have logs (external calls, auth events, state transitions, business operations)
+- Structured format used (JSON / logger library), not string concatenation or `console.log`
+- Every log includes context: userId, action, resourceId (not just a bare message)
+- Correlation/request ID propagated through call chain
+- Log levels used correctly (info for success, warn for recoverable, error for failures)
+- Error logs include stack traces
+- No secrets or PII in logs (passwords, tokens, API keys, emails, phone numbers)
+- No empty catch blocks (`catch (e) {}` — silent error swallowing)
+- No logging inside tight loops (generates thousands of duplicate lines)
+
+**Automatic severity mappings:**
+
+| Pattern | Severity |
+|---------|----------|
+| Secrets or PII logged (tokens, passwords, emails in plaintext) | critical |
+| Empty catch block — error swallowed without logging | major |
+| External call (API, DB) without any logging | major |
+| Missing correlation/request ID in service handling requests | minor |
+| `console.log` / `print` used instead of structured logger | minor |
 
 ### 5. Type Safety (TypeScript/typed languages)
 
@@ -154,6 +173,22 @@ For the code under review, verify correctness of function/class usage:
 
 Read the source files where functions/classes are defined to verify signatures match.
 
+### 11. Resource Management
+
+- Identify heavy resources: ML models, database connection pools, browser instances, API clients, large caches
+- Check if heavy resources are created as singletons (one instance shared) or duplicated across files/components
+- When code creates a heavy resource (`new Model()`, `ModelClass(...)`, `create_pool()`): search the project for other instantiations of the same class
+- Verify resource lifecycle: who creates, who consumes, when disposed
+- Check for resource leaks: opened connections/files/handles that are never closed
+
+**Automatic severity mappings:**
+
+| Pattern | Severity |
+|---------|----------|
+| Same heavy resource class instantiated in multiple files without shared instance | major |
+| Heavy resource created inside a loop or per-request handler | critical |
+| Resource opened but never closed (connection, file handle, cursor) | major |
+
 ## Dimension Prioritization
 
 Focus on dimensions based on code context:
@@ -167,6 +202,8 @@ Focus on dimensions based on code context:
 | Refactoring | Cross-File (10), Testing (6) | Avoid breaking existing code |
 | Performance fix | Performance (9), Dependencies (7) | Target the actual bottleneck |
 | Typed codebase | Type Safety (5), Cross-File (10) | Type errors cause runtime crashes |
+| ML/AI pipeline | Resource Mgmt (11), Performance (9) | Heavy models duplicated waste memory |
+| Microservice init | Resource Mgmt (11), Architecture (1) | Connection pools and clients should be shared |
 
 ## Review Process
 

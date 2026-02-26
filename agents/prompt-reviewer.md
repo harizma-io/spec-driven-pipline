@@ -5,7 +5,7 @@ description: |
   Checks clarity, structure, examples, compression, positive framing.
   Use after writing or modifying LLM prompts.
 model: inherit
-color: green
+color: blue
 skills:
   - prompt-master
 allowed-tools:

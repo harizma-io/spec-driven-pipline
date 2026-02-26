@@ -80,7 +80,16 @@ description: |
    - Tests mentioned in task (if applicable)
    - Save full test suite for end of feature
 
-3. **Run Reviews** (launch in parallel)
+3. **Smoke Verification** (if task has Verification Steps → Smoke or User)
+
+   Execute each command from the Smoke section. Record results in decisions.md Verification section.
+   If a check fails — fix the code before proceeding to reviews.
+   If the task has User checks — ask the user to verify, wait for confirmation.
+
+   Smoke catches integration bugs that mocked tests miss:
+   real API responses, library initialization, config validity.
+
+4. **Run Reviews** (launch in parallel)
 
    **Reviewer selection:**
    - Working on a task file → run reviewers from the task's "Reviewers" section
@@ -96,7 +105,7 @@ description: |
    `{N}` = task number from task file; `"standalone"` if no task file.
    On re-review: new file with incremented round number, old file stays.
 
-4. **Process Findings**
+5. **Process Findings**
 
    Evaluate each finding on merit — severity is metadata, not a filter.
    A valid minor fix still improves quality. Reason: skipping valid findings
@@ -123,6 +132,7 @@ Verify each item before marking complete. If any item fails, return to the relev
 
 - [ ] All phases completed (Preparation, Implementation, Post-work)
 - [ ] Tests pass
+- [ ] Smoke verification executed (if task had Smoke/User checks)
 - [ ] Each reviewer finding evaluated and logged
 - [ ] Findings log table produced
 - [ ] Review JSON reports saved to `logs/working/task-{N}/`

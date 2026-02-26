@@ -8,7 +8,7 @@ description: |
   during /decompose-tech-spec validation phase.
   Not for: template compliance (task-validator), deep security audit (security-auditor).
 model: sonnet
-color: red
+color: yellow
 allowed-tools: Read, Glob, Grep, Write
 ---
 
@@ -72,7 +72,17 @@ For each file/function/class/module referenced in the task:
 - [ ] TDD Anchor covers main scenarios from Acceptance Criteria
 - [ ] Test file paths follow project's test structure (check actual test directories)
 
-### F. Implementation Hints
+### F. Cross-Task Integration
+
+When validating ALL tasks in a single batch (cross-task mode from task-decomposition):
+
+- [ ] Same heavy resource (ML model, DB connection pool, browser instance, API client) is initialized in multiple tasks without a shared instance plan in tech-spec Shared Resources → severity `critical`
+- [ ] Tech-spec Shared Resources lists a resource, but no task is designated as the owner (creator) → severity `critical`
+- [ ] Consumer task does not declare `depends_on` on the owner task for a shared resource → severity `critical`
+- [ ] Tasks in the same wave use inconsistent approaches to the same problem (different patterns, different libraries for same purpose) → severity `major`
+- [ ] Task reads/imports a module created by another task without declaring dependency → severity `critical`
+
+### G. Implementation Hints
 
 - [ ] Hints reference actual patterns from the codebase
 - [ ] Suggested approaches match current project conventions
@@ -83,8 +93,8 @@ For each file/function/class/module referenced in the task:
 
 | Severity | When |
 |----------|------|
-| critical | File/function doesn't exist; hallucinated API; security vulnerability; infeasible steps |
-| major | Hints slightly outdated; test path doesn't match convention; pattern mismatch |
+| critical | File/function doesn't exist; hallucinated API; security vulnerability; infeasible steps; duplicate heavy resource across tasks; missing cross-task dependency |
+| major | Hints slightly outdated; test path doesn't match convention; pattern mismatch; inconsistent approaches across tasks |
 | minor | Could reference a better pattern; hint could be more specific |
 
 ## Output
@@ -99,7 +109,7 @@ Write JSON report to `{feature_path}/logs/tasks/reality-batch{batch_number}-revi
   "findings": [
     {
       "severity": "critical | major | minor",
-      "category": "missing_file | missing_function | hallucination | security | tdd | feasibility | hints",
+      "category": "missing_file | missing_function | hallucination | security | tdd | feasibility | hints | cross-task-integration",
       "task": 2,
       "issue": "Task references getUser() in src/api/users.ts, but file only has fetchUser()",
       "fix": "Replace getUser() with fetchUser() or add getUser() wrapper"

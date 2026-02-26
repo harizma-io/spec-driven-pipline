@@ -22,6 +22,15 @@ Technical approach. (Длина зависит от задачи — без ог
 
 Data flow, interactions, sequence.
 
+### Shared resources
+
+Heavy resources shared across components (ML models, DB connection pools, browser instances, API clients).
+If none — write "None".
+
+| Resource | Owner (creates) | Consumers | Instance count |
+|----------|----------------|-----------|----------------|
+| example: FastEmbedEmbedding | main.py | Indexer, QueryEngine | 1 (singleton) |
+
 ## Decisions
 
 ### Decision 1: [topic]
@@ -65,12 +74,8 @@ DB schemas, interfaces, types. Skip if N/A.
 
 ### Verification approach
 How agent verifies beyond automated tests.
-
-### Per-task verification
-| Task | verify: | What to check |
-|------|---------|--------------|
-| 1    | curl    | GET /api → 200 |
-| 3    | bash    | run command, check output |
+Per-task smoke checks are specified in each task's Verify-smoke / Verify-user fields in Implementation Tasks.
+Post-deploy checks are described in the Post-deploy verification task description.
 
 ### Tools required
 Playwright MCP, Telegram MCP, curl, bash — which are needed.
@@ -93,7 +98,13 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 
 ## Implementation Tasks
 
-<!-- Tasks are brief scope descriptions. AC, TDD, and detailed steps are created during task-decomposition. -->
+<!-- Tasks are brief scope descriptions. AC, TDD, and detailed steps are created during task-decomposition.
+
+     Verify-smoke: concrete executable checks the agent runs during implementation — no deployment needed.
+     Types: command (curl, python -c, docker build), MCP tool (Playwright, Telegram),
+     API call (OpenRouter, external services), local server check, agent with test prompt.
+     Verify-user: agent asks user to verify something (UI, behavior, experience).
+     Both fields optional — omit if task is internal logic fully covered by tests. -->
 
 ### Wave 1 (независимые)
 
@@ -101,7 +112,7 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Description:** Создать REST-эндпоинт для регистрации пользователей. Нужен для MVP авторизации. Результат: POST /api/users возвращает 201.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Verify:** curl — POST /api/users → 201
+- **Verify-smoke:** `curl -X POST localhost:3000/api/users -d '{"name":"test","email":"test@test.com"}' -H 'Content-Type: application/json'` → 201
 - **Files to modify:** `src/api/users.ts`, `src/models/user.ts`
 - **Files to read:** `src/api/index.ts`, `src/middleware/auth.ts`
 
@@ -109,7 +120,7 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Description:** Добавить форму создания пользователя (name, email, role). Связывает UI с API из Task 1. Результат: заполненная форма отправляет POST /api/users.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, test-reviewer
-- **Verify:** user — пользователь проверяет UI
+- **Verify-user:** open localhost:3000/users → form renders, submit creates user
 - **Files to modify:** `src/components/UserForm.tsx`
 - **Files to read:** `src/components/BaseForm.tsx`, `src/hooks/useValidation.ts`
 
@@ -119,9 +130,28 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Description:** Интегрировать отправку welcome-email при создании пользователя. Асинхронно, не блокирует основной flow. Результат: после POST /api/users уходит email.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Verify:** bash — npm test
 - **Files to modify:** `src/services/notification.ts`
 - **Files to read:** `src/api/users.ts`, `src/config/services.ts`
+
+### Audit Wave
+
+<!-- Full-feature audit: 3 auditors review all code in parallel. Always present. -->
+<!-- Auditors read code and write reports. If issues found — lead spawns a fixer, auditors become reviewers. -->
+
+#### Task N-2: Code Audit
+- **Description:** Full-feature code quality audit. Read all source files created/modified in this feature (from decisions.md + tech-spec "Files to modify"). Review holistically for cross-component issues: duplicate resource initialization, shared resources compliance with Architecture decisions, architectural consistency. Write audit report.
+- **Skill:** code-reviewing
+- **Reviewers:** none
+
+#### Task N-1: Security Audit
+- **Description:** Full-feature security audit. Read all source files created/modified in this feature. Analyze for OWASP Top 10 across all components, cross-component auth/data flow. Write audit report.
+- **Skill:** security-auditor
+- **Reviewers:** none
+
+#### Task N: Test Audit
+- **Description:** Full-feature test quality audit. Read all test files created in this feature. Verify coverage, meaningful assertions, test pyramid balance across all components. Write audit report.
+- **Skill:** test-master
+- **Reviewers:** none
 
 ### Final Wave
 
@@ -138,6 +168,9 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Reviewers:** none
 
 #### Task N+2: Post-deploy verification (if applicable)
-- **Description:** Live environment verification via MCP tools from Agent Verification Plan
+- **Description:** Live environment verification:
+  - [verification step 1] — tool: [Telegram MCP / curl / bash]
+  - [verification step 2] — tool: [tool]
+  Tools: [list of required MCP tools / curl / bash]
 - **Skill:** post-deploy-qa
 - **Reviewers:** none

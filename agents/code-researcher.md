@@ -4,6 +4,7 @@ description: |
   Researches codebase for a feature: files, patterns, tests, integrations, risks.
   Creates or deepens code-research.md. Used by user-spec-planning and tech-spec-planning.
 model: inherit
+color: green
 allowed-tools: Read, Write, Glob, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
 

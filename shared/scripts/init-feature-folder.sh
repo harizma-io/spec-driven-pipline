@@ -17,6 +17,7 @@
 #     logs/techspec/
 #     logs/tasks/
 #     logs/working/
+#     logs/checkpoint.yml   (from template, for feature-execution recovery)
 
 set -euo pipefail
 
@@ -85,6 +86,14 @@ if [[ ! -f "$FEATURE_DIR/logs/userspec/interview.yml" ]]; then
     cp "$INTERVIEW_TEMPLATE" "$FEATURE_DIR/logs/userspec/interview.yml"
   else
     echo "Warning: interview template not found: $INTERVIEW_TEMPLATE" >&2
+  fi
+fi
+
+# checkpoint.yml (for feature-execution recovery after context compaction)
+if [[ ! -f "$FEATURE_DIR/logs/checkpoint.yml" ]]; then
+  if [[ -f "$TEMPLATES_DIR/checkpoint.yml.template" ]]; then
+    sed -e "s/{feature}/$FEATURE_NAME/g" \
+        "$TEMPLATES_DIR/checkpoint.yml.template" > "$FEATURE_DIR/logs/checkpoint.yml"
   fi
 fi
 

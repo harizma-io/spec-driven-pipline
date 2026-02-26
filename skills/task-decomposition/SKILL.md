@@ -74,8 +74,21 @@ Launch both in parallel:
 5. Re-validate fixed tasks (repeat 1-4). Maximum 3 iterations.
 6. If problems remain after 3rd iteration — show user: "Вот что осталось — давай решим вместе."
 
+### Cross-Task Integration Check
+
+After individual validation passes, run a final cross-task check:
+
+1. Launch both validators on ALL tasks in a single batch (not split into smaller batches):
+   - `task-validator` — focus: shared resource ownership (one owner, consumers depend_on owner), no competing instances in same wave
+   - `reality-checker` — focus: duplicate heavy resource init, hidden dependencies, inconsistent approaches across tasks
+
+2. If issues found → launch `task-creator` in fix mode for affected tasks. Re-validate fixed tasks.
+
+3. Max 2 iterations for cross-task check (on top of the 3 individual iterations).
+
 **Checkpoint:**
 - [ ] Both validators: status=approved OR user resolved remaining issues
+- [ ] Cross-task integration check: no cross-task conflicts
 
 ## Phase 3: Present to User
 

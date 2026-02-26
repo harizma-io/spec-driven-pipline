@@ -228,7 +228,7 @@ work/{feature}/
 #### Качество
 | Skill | Назначение |
 |---|---|
-| `code-reviewing` | Методология code review по 10 измерениям: архитектура, безопасность, производительность и т.д. |
+| `code-reviewing` | Методология code review по 11 измерениям: архитектура, безопасность, производительность и т.д. |
 | `test-master` | Стратегия тестирования: тестовая пирамида, когда unit/integration/e2e, как обеспечить качество тестов |
 | `security-auditor` | Аудит безопасности по OWASP Top 10: инъекции, аутентификация, криптография |
 | `pre-deploy-qa` | Приёмочное тестирование: запуск тестов, проверка acceptance criteria без живого окружения |
@@ -258,9 +258,19 @@ work/{feature}/
 |---|---|
 | `templates/new-project/` | Шаблон нового проекта: структура `.claude/`, Project Knowledge файлы, CLAUDE.md, .gitignore. Используется командой `/init-project` |
 | `templates/infrastructure/` | Шаблоны инфраструктуры (Docker, CI/CD конфиги). Используются скиллом `infrastructure-setup` |
-| `work-templates/` | Шаблоны рабочих документов: `user-spec.md.template`, `tech-spec.md.template`, `task.md.template`, `decisions.md.template`. Скиллы копируют их при создании новых спеков и задач |
+| `work-templates/` | Шаблоны рабочих документов: `user-spec.md.template`, `tech-spec.md.template`, `task.md.template`, `decisions.md.template`, `checkpoint.yml.template`, `execution-plan.md.template`. Скиллы копируют их при создании новых спеков и задач |
 | `interview-templates/` | Структуры интервью для скиллов планирования: `feature.yml` (для user-spec), `skill.yml` (для skill-test-designer) |
 | `scripts/` | Вспомогательные скрипты: `init-feature-folder.sh` — создание work-директории для новой фичи |
+
+---
+
+## Hooks — автоматизация
+
+Папка `hooks/` содержит хуки Claude Code, которые автоматически срабатывают на определённые события:
+
+| Хук | Событие | Что делает |
+|---|---|---|
+| `post-compact-restore.sh` | SessionStart (compact) | Восстанавливает контекст feature-execution после компактификации: находит checkpoint, проверяет что текущая сессия — тимлид, выводит инструкции для возобновления работы |
 
 ---
 

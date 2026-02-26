@@ -31,7 +31,7 @@ Create task file for the specified task from tech-spec.
 - wave: Wave number for parallel execution (default: 1)
 - skills: Array of skills for the task (default: [code-writing])
 - reviewers: Array of reviewers (default: [code-reviewer, test-reviewer])
-- verify: Verification tool (default: none)
+- verify: Array of verification types: [smoke], [user], [smoke, user], or [] (default: []). Derives from tech-spec Verify-smoke: and Verify-user: presence
 - teammate_name: Cosmetic name for agent teams (default: none)
 
 **Fix mode (optional):**
@@ -86,7 +86,7 @@ Create task file for the specified task from tech-spec.
 - depends_on: {from input}
 - wave: {from input}
 - skills: {from input, array}
-- verify: {from input, only if provided}
+- verify: {from input, array of types: [smoke], [user], [smoke, user], or []}
 - reviewers: {from input, array}
 - teammate_name: {from input, optional — cosmetic name for agent teams}
 
@@ -129,7 +129,17 @@ Rule: better to include an extra doc than miss an important one.
 **Code files:** from files_to_modify / files_to_read.
 
 ### 8. Verification Steps
-How to verify task is complete. For code — run tests. For deploy — check logs. For user-action — user confirmation.
+Split into subsections:
+- **Automated:** test commands from TDD Anchor (e.g., `pytest tests/test_xxx.py -v`)
+- **Smoke:** copy concrete commands from tech-spec task's `Verify-smoke:` field.
+  Executable checks the agent runs during implementation — no deployment needed.
+  Types: command (curl, python -c, docker build), MCP tool, API call, local server, agent with test prompt.
+  Omit subsection if tech-spec has no Verify-smoke for this task.
+- **User:** copy from tech-spec task's `Verify-user:` field.
+  Agent asks user to verify (UI, behavior, experience). Omit if none.
+
+For non-code tasks (deploy, config): adapt sections to match task nature
+(deploy → check logs, config → verify values).
 
 ### 9. Details
 All details for task execution — technical, organizational, any other.

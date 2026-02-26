@@ -55,16 +55,35 @@ Extract from code into separate files:
 - **User-friendly errors**: Show generic message to users, log details internally
 
 ## Logging
-- **Log everything you can**: More logs = easier debugging. When in doubt, add a log
 - **Use structured logging format**: JSON with consistent fields for easy parsing and searching
 - **Include context in every log**: userId, action, resourceId, timestamp, error message
-- **Exclude from logs**: passwords, API keys, tokens, PII, credit card numbers
 - **Use appropriate log levels**:
   - `debug`: Development-only details (verbose, disabled in production)
-  - `info`: Key operations completed (user login, order created)
-  - `warn`: Recoverable issues (retry succeeded, deprecated API used)
-  - `error`: Failures requiring attention (API call failed, database error)
+  - `info`: Key operations completed (user login, order created, payment processed)
+  - `warn`: Recoverable issues (retry succeeded, deprecated API used, rate limit approaching)
+  - `error`: Failures requiring attention (API call failed, database error, auth failure)
 - **Log errors with stack traces**: Helps debug production issues quickly
+
+**What to log:**
+- Entry/exit of key business operations (`order.created`, `payment.processed`)
+- External calls (API, DB, queues) with duration: `api.call.completed { service: "stripe", duration_ms: 230 }`
+- Authentication and authorization events (login, logout, permission denied, token refresh)
+- State transitions (order status changes, workflow steps)
+- Startup/shutdown: config loaded (without secret values), connections established, service ready
+
+**What to exclude from logs:**
+- Passwords, API keys, tokens, session IDs
+- PII at info level and above: email, phone, full name, IP address (use hashed/masked versions)
+- Full request/response bodies (log summary or truncated version instead)
+- High-frequency events without sampling (health checks, heartbeats)
+
+**Correlation ID**: Propagate requestId/correlationId through the entire call chain. Every log entry for the same user request should share one ID for easy tracing.
+
+**Anti-patterns:**
+- Logging inside tight loops (thousands of identical log lines)
+- `console.log` / `print` in production code (use a proper logger)
+- `catch (e) {}` — empty catch blocks that swallow errors silently
+- Logging large objects with `JSON.stringify(entireObject)` (log relevant fields only)
 
 ## Testing
 - **Test public APIs**, not internal implementation

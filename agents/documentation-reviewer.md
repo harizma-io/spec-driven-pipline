@@ -5,7 +5,7 @@ description: |
   Checks for code blocks, generic content, missing operational details, duplication, bloat.
   Orchestrator specifies project path or uses current directory.
 model: inherit
-color: green
+color: blue
 skills:
   - documentation-writing
 allowed-tools:

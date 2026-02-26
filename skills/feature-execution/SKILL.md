@@ -14,6 +14,16 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
 
 ## Phase 1: Initialization
 
+0. Check `work/{feature}/logs/checkpoint.yml`:
+   - `last_completed_wave > 0` → this is a resume after context compaction.
+     Read checkpoint, then read `work/{feature}/decisions.md` to confirm what was actually completed.
+     For tasks in the resumed wave: if a task has a decisions.md entry, it completed — update its
+     frontmatter to `done` and skip it. Only re-execute tasks without a decisions.md entry.
+     Check if `~/.claude/teams/{team_name}/config.json` exists: if yes, team is alive; if no,
+     recreate via TeamCreate. Skip to Phase 2 starting from `next_wave`.
+     Report to user: "Resuming from wave {N}. Waves 1-{N-1} completed."
+   - `last_completed_wave: 0` → fresh start, proceed below.
+
 1. Read `work/{feature}/tech-spec.md` and `work/{feature}/user-spec.md`
 2. Read frontmatter of all task files in `work/{feature}/tasks/` — extract fields:
 
@@ -25,7 +35,7 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
    | `skills` | Skills the teammate loads |
    | `reviewers` | Reviewer agents to spawn (source of truth) |
    | `teammate_name` | Agent name for team spawning (optional) |
-   | `verify` | Verification tool (optional) |
+   | `verify` | Verification types: [smoke], [user], [smoke, user], or [] (optional) |
 
    Build waves: group tasks by `wave` field. Within a wave, all tasks run in parallel.
 
@@ -33,8 +43,9 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
 4. Save to `work/{feature}/logs/execution-plan.md`
 5. Show plan to user, wait for approval
 6. Create team via TeamCreate
+7. Update `work/{feature}/logs/checkpoint.yml`: set `total_waves` from the execution plan.
 
-**Checkpoint:** execution plan approved, team created.
+**Checkpoint:** execution plan approved, team created, checkpoint initialized.
 
 ## Phase 2: Execute Wave
 
@@ -60,7 +71,7 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
    {reviewers_block}
 
    After task complete:
-   - Write entry to {feature_dir}/decisions.md (follow template strictly: ~/.claude/shared/work-templates/decisions.md.template).
+   - Write entry to {feature_dir}/decisions.md (follow template at ~/.claude/shared/work-templates/decisions.md.template).
      Summary: 1-3 sentences describing what was done and key decisions. Link JSON reports for review details.
    - Message team lead: "Task {N} complete. decisions.md updated."
 
@@ -111,16 +122,48 @@ Team lead orchestrates feature delivery. You are a dispatcher: spawn agents, tra
 
 4. All agents work in parallel. Lead waits for teammates to report "Task complete."
 
+### Audit Wave tasks
+
+Audit Wave tasks (Code Audit, Security Audit, Test Audit) have `reviewers: none` — each auditor teammate IS the review. Spawn them as standard teammates (general-purpose, opus), each loads its methodology skill.
+
+Each auditor:
+- Reads decisions.md to understand what was done in each task
+- Reads all source files listed in tech-spec "Files to modify" across all implementation tasks
+- Reviews the final state of code holistically (full files, not diffs)
+- Writes report to `{feature_dir}/logs/working/audit/{auditor-name}.json`
+- Writes decisions.md entry, reports to lead
+
+After all 3 reports:
+- All clean → proceed to Final Wave
+- Issues found → spawn a fixer teammate (ad-hoc, code-writing skill), assign the auditors who found issues as reviewers, standard review protocol (max 3 rounds). After approval → proceed to Final Wave. If unresolved after 3 rounds → escalate (see Escalation).
+
+### Ad-hoc agents
+
+When lead spawns an agent outside the original execution plan (to fix audit findings, handle escalations, complete missing work):
+
+1. Lead assigns a skill and reviewers matching the type of work:
+   - Code changes → skill: `code-writing`, reviewers: code-reviewer, security-auditor, test-reviewer
+   - Prompt changes → skill: `prompt-master`, reviewers: prompt-reviewer
+   - Skill changes → skill: `skill-master`, reviewers: skill-checker
+   - Deploy/CI changes → skill: `deploy-pipeline`, reviewers: deploy-reviewer
+   - Infrastructure changes → skill: `infrastructure-setup`, reviewers: infrastructure-reviewer, security-auditor
+   - Other tasks (research, config, manual steps) → no skill, no reviewers. Agent follows lead's instructions directly.
+2. The ad-hoc agent writes a decisions.md entry (same template as planned tasks)
+3. Standard review protocol: agent commits → sends diff to reviewers → fix → max 3 rounds
+4. Lead verifies decisions.md entry exists before considering ad-hoc work complete
+
 **Checkpoint:** all teammates reported "Task complete", decisions.md entries written.
 
 ## Phase 3: Wave Transition
 
 1. Verify decisions.md entries exist and match template (`~/.claude/shared/work-templates/decisions.md.template`)
-2. Update task frontmatter: `status: in_progress` → `status: done`
-3. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
-4. Next wave → Phase 2
+2. If task had Smoke/User verification steps — confirm decisions.md Verification section includes results. Missing results without explanation → ask user whether to proceed.
+3. Update task frontmatter: `status: in_progress` → `status: done`
+4. Git commit: `chore: complete wave {N} — update task statuses and decisions`. Code is already committed by teammates.
+5. Update `work/{feature}/logs/checkpoint.yml`: set `last_completed_wave`, update task statuses, set `next_wave`.
+6. Next wave → Phase 2
 
-**Checkpoint:** all wave tasks done, committed.
+**Checkpoint:** all wave tasks done, committed, checkpoint updated.
 
 ## Phase 4: User Review
 
@@ -128,30 +171,22 @@ All waves done including Final Wave (QA, deploy if applicable, post-deploy verif
 
 1. Show results: what was built, key decisions, QA report summary
 2. Describe what to check manually (from execution plan "user checks" section)
-3. Issues found → fix → review → commit
-4. All ok → finalize, shutdown team
-
-## Communication Flow
-
-```
-Lead spawns: Teammate + Reviewers (if task has reviewers)
-Reviewers: read specs, wait for teammate's message
-Teammate works → commits code (tests pass) → sends diff to each Reviewer
-Reviewer reviews diff → writes JSON report → SendMessage to Teammate: "Report at [path]"
-Teammate reads reports, fixes, commits fixes → sends Reviewers updated diff (next round, max 3)
-After reviews pass: Teammate commits review reports
-Teammate (no reviewers): works → commits code → reports completion to Lead
-Teammate (user action needed): sends instruction to Lead → Lead forwards to user → returns confirmation
-Teammate → Lead: "Task {N} complete. decisions.md updated."
-Lead commits status updates + decisions.md → next wave
-```
+3. Issues found → fix → review → commit (max 3 rounds). If unresolved → escalate (see Escalation).
+4. All ok → finalize, shutdown team, delete `work/{feature}/logs/checkpoint.yml`
 
 ## Escalation
 
 Call user when:
-- 3 review iterations exhausted with remaining findings
+- 3 review/fix iterations exhausted with remaining findings
 - Teammate reports blocker or ambiguous requirement
 - Task depends on unavailable MCP tool or external service
+
+When escalating:
+1. Stop all work on the blocked task/wave
+2. Report to user: what failed, what was tried (all 3 attempts), what remains unresolved
+3. Write decisions.md entry: summary of attempts + unresolved findings
+4. Git commit: `chore: escalate task {N} — unresolved after 3 fix rounds`
+5. Wait for user decision before continuing
 
 ## Self-Verification
 

@@ -72,18 +72,38 @@ Analyze if additional information is needed based on user-spec and code research
    - `branch`: `dev` (simple change, single component) or `feature/{name}` (multiple components, architectural changes)
 
 3. Fill all template sections. The template defines section structure — follow it directly.
+   In Architecture → Shared Resources: list heavy resources (ML models, DB pools, browser instances, API clients) shared across components. Specify owner (who creates), consumers, instance count. If none — write "None".
 
-4. Fill Implementation Tasks by waves. For each task provide: Description, Skill, Reviewers, Verify, Files to modify, Files to read. Select skill and reviewers from [skills-and-reviewers.md](references/skills-and-reviewers.md) (execution skills catalog, reviewer agents, default mappings).
+4. Fill Implementation Tasks by waves. For each task provide: Description, Skill, Reviewers, Verify-smoke (optional), Verify-user (optional), Files to modify, Files to read. Select skill and reviewers from [skills-and-reviewers.md](references/skills-and-reviewers.md) (execution skills catalog, reviewer agents, default mappings).
+
+   For each task, write `Verify-smoke:` when the task involves:
+   - External API integration → curl/httpie command to real endpoint with expected response
+   - Library/model initialization → `python -c` or import check that verifies setup
+   - Docker/infrastructure → `docker compose build`, `docker run` commands
+   - LLM/prompt work → spawn agent with prompt + test question, check response
+   - External service API (OpenRouter, Stripe, etc.) → test API call with expected response
+   - MCP-verifiable UI/frontend → use Playwright MCP or similar to check rendered page
+   Write `Verify-user:` when user should check something: UI on localhost, behavior, UX.
+   Omit both if task is purely internal logic covered by unit tests.
 
    **Task brevity rules:**
    - Tasks are brief scope descriptions (2-3 sentences). Detailed steps, AC, and TDD anchors are created during task-decomposition phase.
    - Task Description answers WHAT and WHY, not HOW. No step-by-step instructions, no line numbers, no implementation details.
    - All technical decisions belong in the Decisions section, not in task descriptions. If you're writing a decision rationale inside a task — move it to Decisions.
 
-5. The last wave is always Final Wave. It contains:
+5. The last two waves are always **Audit Wave** and **Final Wave**, in that order:
+
+   **Audit Wave** (always present) — 3 tasks running in parallel, `reviewers: none`:
+   - **Code Audit** (skill: `code-reviewing`) — holistic code quality review of all feature code
+   - **Security Audit** (skill: `security-auditor`) — OWASP Top 10 across all components
+   - **Test Audit** (skill: `test-master`) — test quality and coverage across all components
+
+   Auditors read all source files from the feature and write reports (analysis only). If issues found — feature-execution lead spawns a fixer agent, auditors become reviewers for the fix.
+
+   **Final Wave:**
    - **QA** (skill: `pre-deploy-qa`) — always present. Acceptance testing: run all tests, verify acceptance criteria from user-spec and tech-spec.
    - **Deploy** (skill: `deploy-pipeline`) — only if deploy is needed for this feature.
-   - **Post-deploy verification** (skill: `post-deploy-qa`) — only if MCP verification exists in Agent Verification Plan.
+   - **Post-deploy verification** (skill: `post-deploy-qa`) — only if live-environment checks are needed (MCP tools listed in Agent Verification Plan → Tools required).
    QA is mandatory. Deploy and post-deploy — if applicable.
 
 6. Task Count Check: if >15 tasks — propose splitting into MVP + Extension phases. Wait for user decision.

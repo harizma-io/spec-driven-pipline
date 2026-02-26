@@ -50,7 +50,7 @@ Report goes to `logs/tasks/` (validator reports). Separate from `logs/working/` 
 - [ ] `wave` — number ≥ 1
 - [ ] `skills` — array of strings. `[code-writing]`, not `code-writing`. Can be empty `[]` for no-skill tasks (user instructions, config)
 - [ ] `reviewers` — array of strings. Can be empty `[]` or contain `none` for self-verifying tasks (QA, deploy)
-- [ ] `verify` — if present, value is a string. If absent — ok
+- [ ] `verify` — if present, must be a YAML array. Valid values: `[smoke]`, `[user]`, `[smoke, user]`, or `[]`. String value is invalid
 - [ ] `teammate_name` — optional string. Cosmetic name for teammate in agent teams. If absent — ok
 - [ ] No extra fields beyond those in template
 
@@ -166,7 +166,16 @@ These checks require reading ALL tasks in the batch (not just individual tasks).
 - [ ] **Over-decomposition**: total task count proportional to feature scale. Heuristic: more than 3 tasks per user-spec requirement is suspicious. More than 8 tasks for a feature with ≤3 user stories → severity `major` with recommendation to merge related tasks
 - [ ] **Dependency cycles**: no circular dependencies in `depends_on` chain. Build directed graph, check for cycles → severity `critical`
 
-### G. Carry-forward from tech-spec
+### G. Cross-Task Resource Sharing
+
+When validating ALL tasks in a single batch (cross-task mode from task-decomposition):
+
+- [ ] **Shared Resources compliance**: if tech-spec Architecture has Shared Resources table — each resource has exactly one task that creates it (owner). If no task creates the resource → severity `critical`
+- [ ] **Consumer dependency**: tasks that consume a shared resource declare `depends_on` on the owner task. Missing dependency → severity `critical`
+- [ ] **No competing instances**: tasks in the same wave do not each create their own instance of a shared resource. If two tasks in the same wave both create the same heavy resource → severity `critical`
+- [ ] **Shared Resources completeness**: if multiple tasks reference the same heavy dependency (ML model, DB pool, API client) but tech-spec Shared Resources is empty or missing this resource → severity `major`
+
+### H. Carry-forward from tech-spec
 
 Cross-reference each task with its Implementation Tasks entry in tech-spec:
 
@@ -177,8 +186,8 @@ Cross-reference each task with its Implementation Tasks entry in tech-spec:
 
 | Severity | When |
 |----------|------|
-| critical | Section missing; mandatory context file missing; frontmatter field missing or wrong type; template placeholder present; frontmatter↔body mismatch; AC/TDD lost from tech-spec; dependency cycle; missing dependency declaration |
-| major | Merge candidate (<5 lines, same file); split candidate (>3 files, unrelated); over-decomposition; logical cohesion issue |
+| critical | Section missing; mandatory context file missing; frontmatter field missing or wrong type; template placeholder present; frontmatter↔body mismatch; AC/TDD lost from tech-spec; dependency cycle; missing dependency declaration; shared resource has no owner task; consumer missing depends_on on owner; competing resource instances in same wave |
+| major | Merge candidate (<5 lines, same file); split candidate (>3 files, unrelated); over-decomposition; logical cohesion issue; shared resource not listed in tech-spec Shared Resources |
 | minor | Sections in wrong order; PK files missing; entry format imprecise; edge cases not considered; stylistic |
 
 ## Output
@@ -193,7 +202,7 @@ Write JSON report:
   "findings": [
     {
       "severity": "critical | major | minor",
-      "category": "frontmatter | structure | content | atomicity | consistency | decomposition | carry-forward",
+      "category": "frontmatter | structure | content | atomicity | consistency | decomposition | resource-sharing | carry-forward",
       "task": 2,
       "section": "TDD Anchor",
       "issue": "TDD Anchor contains only test names without descriptions",
