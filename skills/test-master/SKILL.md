@@ -168,31 +168,31 @@ Tests that duplicate coverage waste time and create maintenance burden.
 ### What Makes a BAD Test
 
 **Tests nothing:**
-```typescript
-expect(true).toBe(true)
+```python
+assert True
 ```
 
 **Tests only that mock was called:**
-```typescript
-expect(api.call).toHaveBeenCalled()  // Without checking result
+```python
+mock_api.call.assert_called()  # Without checking result
 ```
 
 **No assertions:**
-```typescript
-render(<Component />)  // Just renders, checks nothing
+```python
+render(Component())  # Just renders, checks nothing
 ```
 
 ### What Makes a GOOD Test
 
 **Tests actual result:**
-```typescript
-expect(calculateTotal(100, 0.2)).toBe(80)
+```python
+assert calculate_total(100, 0.2) == 80.0
 ```
 
 **Tests real state change:**
-```typescript
-cart.add({ id: 1 })
-expect(cart.items).toHaveLength(1)
+```python
+cart.add({"id": 1})
+assert len(cart.items) == 1
 ```
 
 ### Rule: Excessive Mocking = Wrong Test Type
@@ -222,7 +222,7 @@ For some project types, E2E tests are MORE valuable than unit tests:
 ### Unit Tests
 - **Mock:** Database, API calls, file system, time
 - **Why:** Fast, isolated, deterministic
-- **How:** Use framework mocking (jest.mock, unittest.mock)
+- **How:** Use framework mocking (Python: `unittest.mock.patch`, `pytest-mock`; JS: `jest.mock`)
 
 ### Integration Tests
 - **Real:** Database (test DB), file system

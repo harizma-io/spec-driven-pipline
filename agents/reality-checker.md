@@ -111,8 +111,8 @@ Write JSON report to `{feature_path}/logs/tasks/reality-batch{batch_number}-revi
       "severity": "critical | major | minor",
       "category": "missing_file | missing_function | hallucination | security | tdd | feasibility | hints | cross-task-integration",
       "task": 2,
-      "issue": "Task references getUser() in src/api/users.ts, but file only has fetchUser()",
-      "fix": "Replace getUser() with fetchUser() or add getUser() wrapper"
+      "issue": "Task references get_user() in src/api/users.py, but file only has fetch_user()",
+      "fix": "Replace get_user() with fetch_user() or add get_user() wrapper"
     }
   ],
   "stats": {

@@ -24,7 +24,7 @@ These rules apply to ALL documentation operations (audit, edit, create).
 
 **Describe what exists, what it does, and why.** High-level overview of components, how they work together, decisions made (why this stack, why this architecture), operational details (server addresses, deploy procedures, log locations, env var names). Skip what's obvious from reading the code itself — function signatures, implementation details, generic framework behavior.
 
-**No code blocks, no pseudocode.** Link to source files: `[auth.ts:45-67](src/auth/jwt.ts#L45-L67)`. Code in docs gets outdated and bloats context.
+**No code blocks, no pseudocode.** Link to source files: `[auth.py:45-67](src/auth/jwt.py#L45-L67)`. Code in docs gets outdated and bloats context.
 
 **No duplication between files.** Information lives in ONE place. Cross-reference: "See deployment.md for env vars."
 

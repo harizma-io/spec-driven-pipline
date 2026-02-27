@@ -188,8 +188,8 @@ Agents always return JSON report — even if they modify files or execute comman
 ```json
 {
   "status": "success" | "partial" | "failed",
-  "files_modified": ["path/to/file.ts", ...],
-  "files_created": ["path/to/new.ts", ...],
+  "files_modified": ["path/to/file.py", ...],
+  "files_created": ["path/to/new.py", ...],
   "summary": "Created 2 files, modified 3 files"
 }
 ```

@@ -24,7 +24,7 @@ Elite security analysis with deep expertise in OWASP Top 10 and modern vulnerabi
    - Authorization and access control (RBAC, ABAC, privilege escalation)
    - Input validation and sanitization (server-side validation, type checking)
    - Cryptography (algorithms, key management, secure random)
-   - Dependency vulnerabilities (npm audit, outdated packages, CVEs)
+   - Dependency vulnerabilities (Python: `uv audit` / `pip-audit`; JS: `npm audit`; outdated packages, CVEs)
    - Rate limiting and DoS protection
    - CORS configuration
    - Security headers (CSP, HSTS, X-Frame-Options)
@@ -40,7 +40,7 @@ Elite security analysis with deep expertise in OWASP Top 10 and modern vulnerabi
    - **Medium**: Notable concerns needing timely fixes (weak crypto, missing headers)
    - **Low**: Best practice violations (information disclosure)
 
-3. **Dependency Analysis**: npm audit (or equivalent), analyze:
+3. **Dependency Analysis**: `uv audit` / `pip-audit` for Python, `npm audit` for JS/TS (or equivalent), analyze:
    - Direct and transitive dependency vulnerabilities
    - Outdated packages with known security issues
    - Recommended upgrade paths
@@ -79,7 +79,7 @@ If any missing, request them before proceeding.
 - **Stay Current**: Reference OWASP Top 10 (2021+) and current CVE databases
 - **Explain Impact**: Make risks concrete with realistic attack scenarios
 - **Provide Examples**: Include secure code in recommendations
-- **Dependencies First**: Always include npm audit results
+- **Dependencies First**: Always include dependency audit results (`uv audit` for Python, `npm audit` for JS/TS)
 - **No Assumptions**: Flag uncertain framework protections for manual review
 
 ## Escalation

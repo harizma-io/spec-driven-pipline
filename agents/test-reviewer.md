@@ -57,7 +57,7 @@ Write JSON report to `report_path`. Same format for test code review and strateg
     {
       "severity": "critical | major | minor",
       "category": "empty_test | mock_only | missing_coverage | pyramid_violation | excessive_mocking | anti_pattern | wrong_test_type | redundant_testing",
-      "location": "src/tests/auth.test.ts:42 | Section: Testing Strategy | Component: Auth module",
+      "location": "tests/unit/test_auth.py:42 | Section: Testing Strategy | Component: Auth module",
       "issue": "Description of the problem",
       "recommendation": "Specific fix with concrete assertions or strategy change"
     }
@@ -81,7 +81,7 @@ Write JSON report to `report_path`. Same format for test code review and strateg
 ```
 
 `location` adapts to context:
-- Test code review: file path with line number (`src/tests/auth.test.ts:42`)
+- Test code review: file path with line number (`tests/unit/test_auth.py:42`)
 - Strategy review: section or component reference (`Section: Testing Strategy`, `Component: Auth module`)
 
 ### Status Decision

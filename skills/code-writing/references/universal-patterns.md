@@ -23,8 +23,8 @@ Universal coding standards for generating high-quality code. Always applied as b
 - **Verify imports exist before using**: Read source files to confirm exports match expected usage
 - **Check function signatures**: Ensure function/method signatures match how you're calling them
 - **Use Context7 for library docs**: Get up-to-date API documentation for correct usage patterns
-- **Prefer well-maintained packages**: Check npm/PyPI activity, security advisories, last update date
-- **Pin major versions**: Use `^` (caret) for npm to allow patch updates, avoid breaking changes
+- **Prefer well-maintained packages**: Check PyPI / npm activity, security advisories, last update date
+- **Pin versions**: Python — `>=X.Y` in `pyproject.toml [project.dependencies]`; JS/TS — `^` (caret) in `package.json`
 
 ## Separation of Concerns
 Extract from code into separate files:
@@ -42,7 +42,7 @@ Extract from code into separate files:
 
 ## Validation
 - **Validate at API boundaries**: Check input in controllers, API routes, function entry points
-- **Use schema validation libraries**: Zod, Yup, io-ts for runtime type checking and validation
+- **Use schema validation libraries**: Python — `pydantic` v2; JS/TS — Zod, Yup, io-ts
 - **Validate on BOTH frontend AND backend**: Defense in depth - never trust client-side validation alone
 - **Sanitize before database operations**: Prevent SQL injection, NoSQL injection attacks
 - **Fail fast with clear errors**: Return specific validation errors to help users fix input
@@ -106,7 +106,7 @@ Extract from code into separate files:
   - For complex logic, "what it does" is also valuable
   - **When to write comments:** Complex business logic, non-obvious decisions, constraints, edge cases, security areas
   - **When NOT to write comments:** Obvious self-documenting code, every function, repeating type information
-  - **Format:** JSDoc/TSDoc for public APIs, inline comments for complex logic
+  - **Format:** Python — Google-style docstrings for public functions/classes; JS/TS — JSDoc/TSDoc; inline comments for complex logic
   - When updating code → update comments too
 - **DRY principle**: Extract repeated code into functions/modules
 - **Readable > clever**: Clear code is better than short but cryptic code

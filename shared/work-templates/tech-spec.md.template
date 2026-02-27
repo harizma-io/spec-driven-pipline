@@ -112,17 +112,17 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Description:** Создать REST-эндпоинт для регистрации пользователей. Нужен для MVP авторизации. Результат: POST /api/users возвращает 201.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Verify-smoke:** `curl -X POST localhost:3000/api/users -d '{"name":"test","email":"test@test.com"}' -H 'Content-Type: application/json'` → 201
-- **Files to modify:** `src/api/users.ts`, `src/models/user.ts`
-- **Files to read:** `src/api/index.ts`, `src/middleware/auth.ts`
+- **Verify-smoke:** `curl -X POST localhost:8000/api/users -d '{"name":"test","email":"test@test.com"}' -H 'Content-Type: application/json'` → 201
+- **Files to modify:** `src/api/users.py`, `src/models/user.py`
+- **Files to read:** `src/api/__init__.py`, `src/middleware/auth.py`
 
 #### Task 2: [Name]
 - **Description:** Добавить форму создания пользователя (name, email, role). Связывает UI с API из Task 1. Результат: заполненная форма отправляет POST /api/users.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, test-reviewer
-- **Verify-user:** open localhost:3000/users → form renders, submit creates user
-- **Files to modify:** `src/components/UserForm.tsx`
-- **Files to read:** `src/components/BaseForm.tsx`, `src/hooks/useValidation.ts`
+- **Verify-user:** open localhost:8000/users → form renders, submit creates user
+- **Files to modify:** `src/routes/users.py`
+- **Files to read:** `src/routes/__init__.py`, `src/validators/user.py`
 
 ### Wave 2 (зависит от Wave 1)
 
@@ -130,8 +130,8 @@ Playwright MCP, Telegram MCP, curl, bash — which are needed.
 - **Description:** Интегрировать отправку welcome-email при создании пользователя. Асинхронно, не блокирует основной flow. Результат: после POST /api/users уходит email.
 - **Skill:** code-writing
 - **Reviewers:** code-reviewer, security-auditor, test-reviewer
-- **Files to modify:** `src/services/notification.ts`
-- **Files to read:** `src/api/users.ts`, `src/config/services.ts`
+- **Files to modify:** `src/services/notification.py`
+- **Files to read:** `src/api/users.py`, `src/config/services.py`
 
 ### Audit Wave
 

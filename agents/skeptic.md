@@ -61,8 +61,8 @@ Write JSON report to `{report_path}`:
     {
       "severity": "critical | major | minor",
       "type": "missing_file | missing_function | missing_dependency | missing_pattern | name_mismatch",
-      "claim": "tech-spec says: src/api/users.ts has getUser() method",
-      "reality": "File exists but has no getUser() — only fetchUser()",
+      "claim": "tech-spec says: src/api/users.py has get_user() function",
+      "reality": "File exists but has no get_user() — only fetch_user()",
       "source": "tech-spec.md, section Implementation Tasks, Task 2",
       "fix": "Replace getUser() with fetchUser() or implement getUser()"
     }
@@ -71,7 +71,7 @@ Write JSON report to `{report_path}`:
     "total_claims_checked": 42,
     "confirmed": 38,
     "mirages_found": 4,
-    "verified_claims": ["src/api/index.ts", "getUser()", "express@4.18"]
+    "verified_claims": ["src/api/__init__.py", "get_user()", "fastapi>=0.115"]
   }
 }
 ```

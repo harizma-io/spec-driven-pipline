@@ -4,7 +4,7 @@ statsig/
 telemetry/
 .credentials.json
 .mcp.json
-
+.idea/
 # User data (privacy)
 projects/
 projects-registry.json
@@ -16,6 +16,7 @@ todos/
 plans/
 file-history/
 plugins/
+reviews/
 stats-cache.json
 
 # Session & runtime

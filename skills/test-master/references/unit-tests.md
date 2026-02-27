@@ -40,28 +40,30 @@ If you need to mock 3+ dependencies to test something, consider:
 - E2E test (test in real environment)
 
 **Bad - testing mocks:**
-```typescript
-jest.mock('../db')
-jest.mock('../api')
-jest.mock('../cache')
-it('should process', () => {
-  process()
-  expect(db.save).toHaveBeenCalled()  // Tests mock, not behavior
-})
+```python
+# Bad: mocking 3+ dependencies — use integration test instead
+@patch('src.db.save')
+@patch('src.api.call')
+@patch('src.cache.get')
+def test_process(mock_cache, mock_api, mock_db):
+    process()
+    mock_db.assert_called()  # Tests mock, not behavior
 ```
 
 **Better:** Integration test with real dependencies.
 
 ### UI Components with Complex State
 
-Don't unit test React/Vue components with mocked hooks and context.
+Don't unit test UI components with mocked context/state.
 Use integration tests or E2E instead.
 
 **Bad:**
-```typescript
-jest.mock('../hooks/useAuth')
-jest.mock('../context/CartContext')
-it('renders', () => render(<Checkout />))
+```python
+# Bad: mocking all dependencies in a component test
+@patch('src.auth.get_current_user')
+@patch('src.cart.get_cart_context')
+def test_checkout_renders(mock_cart, mock_auth):
+    render(CheckoutPage())  # Tests mocks, not real behavior
 ```
 
 **Better:** E2E test that actually clicks through checkout flow.

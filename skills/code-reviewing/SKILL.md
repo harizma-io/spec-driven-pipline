@@ -83,12 +83,18 @@ Perform systematic analysis across these 11 dimensions:
 | Missing correlation/request ID in service handling requests | minor |
 | `console.log` / `print` used instead of structured logger | minor |
 
-### 5. Type Safety (TypeScript/typed languages)
+### 5. Type Safety (Python/TypeScript/typed languages)
 
-For TypeScript or other typed codebases:
+**For Python projects (mypy):**
+- Run `mypy --strict` and verify no errors
+- Check type annotations on all public functions/methods
+- Avoid `Any` type unless explicitly justified with a comment
+- Use `pydantic` models for data validation at system boundaries
+- Verify `Optional[T]` / `T | None` used for nullable values
 
+**For TypeScript or other typed codebases:**
 - Validate type definitions completeness and accuracy
-- Check for inappropriate use of `any` type (TypeScript) or equivalent loose typing
+- Check for inappropriate use of `any` type or equivalent loose typing
 - Assess interface and type alias design
 - Review generic type usage and constraints
 - Verify null/undefined handling and optional chaining
@@ -119,8 +125,8 @@ For TypeScript or other typed codebases:
 **Good practices:**
 - Verify imports exist before using: read source files to confirm exports match expected usage
 - Check function signatures: ensure signatures match how you're calling them
-- Prefer well-maintained packages: check npm/PyPI activity, security advisories
-- Pin major versions: use `^` (caret) for npm to allow patch updates
+- Prefer well-maintained packages: check PyPI / npm activity, security advisories
+- Pin versions: Python — use `>=X.Y` in `pyproject.toml`; JS/TS — use `^` (caret) in `package.json`
 
 ### 8. Security Considerations
 
@@ -164,7 +170,7 @@ For the code under review, verify correctness of function/class usage:
 - Function called with correct arguments
 - Method exists on the class
 - Import paths are valid
-- Types match (if TypeScript)
+- Types match (Python: mypy passes; TypeScript: no type errors)
 
 **Report as issue if:**
 - Function called with wrong arguments (runtime crash)
