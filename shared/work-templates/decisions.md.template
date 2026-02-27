@@ -28,7 +28,7 @@ Review details — in JSON files via links. QA report — in logs/working/.
 - code-reviewer: OK → [logs/working/task-N/code-reviewer-2.json]
 
 **Verification:**
-- `npm test` → 42 passed
+- `pytest` → 42 passed
 - Manual check → OK
 
 -->

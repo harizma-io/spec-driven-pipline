@@ -17,25 +17,25 @@ Priority order:
 3. Heavy mocking (3+) → wrong test type, switch to integration
 
 ### No Mock-Return Pattern
-```typescript
-// BAD — tests mock, not code
-mockService.getData.mockReturnValue(42)
-const result = await handler()
-expect(result).toBe(42)
+```python
+# BAD — tests mock, not code
+mock_service.get_data.return_value = 42
+result = await handler()
+assert result == 42
 
-// GOOD — tests actual computation
-const result = await calculateTotal(100, 0.2)
-expect(result).toBe(80)
+# GOOD — tests actual computation
+result = calculate_total(100, 0.2)
+assert result == 80.0
 ```
 
 ### Test the Contract
-```typescript
-// BAD — tests implementation detail
-expect(db.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = 1')
+```python
+# BAD — tests implementation detail
+mock_db.execute.assert_called_with('SELECT * FROM users WHERE id = 1')
 
-// GOOD — tests what goes in → what comes out
-const user = await getUser(1)
-expect(user.name).toBe('Alice')
+# GOOD — tests what goes in → what comes out
+user = await get_user(1)
+assert user.name == 'Alice'
 ```
 
 ---
@@ -104,7 +104,7 @@ expect(user.name).toBe('Alice')
 // Assert — verify the result
 ```
 
-Group tests by feature or function. Use `describe` blocks for grouping, `it`/`test` for individual cases.
+Group tests by feature or function. Use `class Test*` for grouping, `def test_*` for individual cases (pytest). For JS/TS: `describe` blocks with `it`/`test`.
 
 ## What test-reviewer Checks
 

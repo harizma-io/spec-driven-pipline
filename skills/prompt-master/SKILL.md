@@ -83,8 +83,8 @@ Before:
 
 After:
   Write an email validation function.
-  Context: TypeScript, used in a signup form, must handle
-  international domains. Return {valid: boolean, reason: string}.
+  Context: Python 3.13, used in a signup form, must handle
+  international domains. Return dict with keys: valid (bool), reason (str).
 ```
 
 ### Structure with XML tags

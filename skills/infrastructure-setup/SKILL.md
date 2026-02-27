@@ -30,12 +30,27 @@ If files lack needed info, search other project-knowledge references — info ma
 
 Init framework from `architecture.md`. Use Context7 for up-to-date init commands and flags. Verify it starts.
 
-**Checkpoint:** dev server starts successfully.
+**Python projects:**
+```bash
+uv init .
+uv python pin 3.13
+# pyproject.toml created automatically
+uv add --dev pytest pytest-asyncio pytest-cov ruff mypy
+```
+
+**Node.js/TypeScript projects:** use `npm init` / `npx create-*` as appropriate.
+
+**Checkpoint:** dev server / CLI starts successfully.
 
 ## Phase 2: Folder Structure
 
 Convention — separate concerns by purpose:
 
+**Python:**
+- **APIs / CLI:** `src/{package_name}/{modules}.py` + `tests/{unit,integration,e2e}/` + `pyproject.toml`
+- **Structure:** `src/` layout preferred (importable package under `src/`)
+
+**Node.js/TypeScript:**
 - **Web Apps:** `src/{components, services, lib, config}` + `tests/{unit, integration, e2e}`
 - **APIs:** `src/{routes, services, models, middleware, config}` + `tests/{unit, integration}`
 - **CLI tools:** `src/{commands, services, config}` + `tests/{unit, integration}`
@@ -63,6 +78,19 @@ credentials.json
 secrets/
 ```
 
+Python-specific patterns (add for Python projects):
+```
+__pycache__/
+*.pyc
+*.pyo
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+*.egg-info/
+.venv/
+```
+
 Add framework-specific patterns from `architecture.md`.
 Create `.env.example` with required variable names (no values).
 
@@ -77,6 +105,21 @@ Pre-commit scope (fast, staged files only):
 - Lint staged files
 - Format check
 
+**Python `.pre-commit-config.yaml`:**
+```yaml
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+```
+
 Full test suites, integration tests, builds belong in CI.
 
 **Checkpoint:** commit a file containing `AKIA1234567890EXAMPLE` — gitleaks blocks it.
@@ -84,6 +127,9 @@ Full test suites, integration tests, builds belong in CI.
 ## Phase 6: Testing Infrastructure
 
 Set up test framework, create smoke test: 1-2 tests verifying setup works (import main module, check environment).
+
+**Python:** `uv run pytest tests/test_smoke.py` — verify passes.
+**Node.js:** `npm test -- tests/smoke.test.ts` — verify passes.
 
 **Checkpoint:** test command passes.
 
@@ -97,10 +143,10 @@ Commit:
 ```
 chore: setup project infrastructure
 
-- Initialize [framework] project
-- Setup pre-commit hooks (gitleaks)
+- Initialize Python 3.13 project with uv (or [framework] for other stacks)
+- Setup pre-commit hooks (gitleaks + ruff)
 - Create folder structure
-- Add testing infrastructure
+- Add pytest testing infrastructure
 - Configure .gitignore and .env.example
 [- Setup Docker (if applicable)]
 ```

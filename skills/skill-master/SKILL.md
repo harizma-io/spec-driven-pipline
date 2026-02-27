@@ -362,7 +362,7 @@ If skill has context-heavy tasks (reviews, research, validation):
 
 1. **Inline prompts** — for simple, one-off tasks (<50 lines):
    ```
-   Use general-purpose/explore/plan subagent to find all TypeScript files importing {module}
+   Use general-purpose/explore/plan subagent to find all Python files importing {module}
    ```
 
 2. **Skill + Agent pattern** — for complex, reusable tasks (>50 lines):

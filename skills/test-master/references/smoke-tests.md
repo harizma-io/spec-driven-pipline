@@ -53,18 +53,17 @@ Smoke tests verify minimal system functionality - "is the system alive?"
 - Environment variables accessible (`process.env.NODE_ENV`)
 
 **Good smoke test:**
-```typescript
-it('should import main module without errors', () => {
-  expect(() => require('../src/index')).not.toThrow()
-})
+```python
+def test_main_module_import():
+    """Verify main application module can be imported."""
+    import src.main  # should not raise ImportError
 ```
 
 **Bad smoke test - tests nothing:**
-```typescript
-// ❌ USELESS - delete such tests
-it('should pass', () => {
-  expect(true).toBe(true)
-})
+```python
+# ❌ USELESS - delete such tests
+def test_always_passes():
+    assert True
 ```
 
 ### ❌ Don't write smoke tests for:
@@ -77,31 +76,9 @@ it('should pass', () => {
 
 ## Example Smoke Tests
 
-### Node.js/TypeScript
+### Python (primary)
 
-**File:** `tests/smoke.test.ts`
 
-```typescript
-/**
- * Smoke tests - verify basic project setup
- */
-
-describe('Project Setup - Smoke Test', () => {
-  it('should have NODE_ENV configured', () => {
-    // Verify environment is set up
-    expect(process.env.NODE_ENV).toBeDefined();
-  });
-
-  it('should be able to import main module', () => {
-    // Verify main application code can be imported
-    expect(() => {
-      require('../src/index');
-    }).not.toThrow();
-  });
-});
-```
-
-### Python
 
 **File:** `tests/test_smoke.py`
 
@@ -168,19 +145,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: astral-sh/setup-uv@v5
         with:
-          node-version: '20'
-      - run: npm ci
+          python-version: "3.13"
+      - run: uv sync --frozen
       - name: Run smoke tests
-        run: npm test -- tests/smoke.test.ts
+        run: uv run pytest tests/test_smoke.py -v
 
   unit-tests:
     needs: smoke-test  # Only run if smoke passes
     runs-on: ubuntu-latest
     steps:
       - name: Run unit tests
-        run: npm test -- tests/unit/
+        run: uv run pytest tests/unit/ -v
 ```
 
 ### Fail Fast Strategy
@@ -206,36 +183,32 @@ If smoke test fails:
 ## Common Mistakes
 
 ### ❌ Too Many Smoke Tests
-```typescript
-// Bad: Testing too much in smoke tests
-describe('Smoke', () => {
-  it('test database connection', ...);
-  it('test API endpoint', ...);
-  it('test user creation', ...);
-  it('test authentication', ...);
-  // ... 20 more tests
-});
+```python
+# Bad: Testing too much in smoke tests
+def test_database_connection(): ...
+def test_api_endpoint(): ...
+def test_user_creation(): ...
+def test_authentication(): ...
+# ... 20 more tests
 ```
 
 **Fix:** Keep minimal (1-2 tests). Move others to appropriate test type.
 
 ### ❌ Slow Smoke Tests
-```typescript
-// Bad: Smoke test that takes seconds
-it('should connect to database', async () => {
-  await db.connect();  // Slow!
-  await db.query('SELECT 1');  // Not a smoke test!
-});
+```python
+# Bad: Smoke test that makes real connections
+async def test_database_alive():
+    await db.connect()           # Slow!
+    await db.execute("SELECT 1") # Not a smoke test!
 ```
 
 **Fix:** Smoke tests shouldn't make real connections. Just test imports work.
 
 ### ❌ Business Logic in Smoke Tests
-```typescript
-// Bad: Testing business logic
-it('should calculate discount correctly', () => {
-  expect(calculateDiscount(100, 0.2)).toBe(80);
-});
+```python
+# Bad: Testing business logic in smoke tests
+def test_discount_calculation():
+    assert calculate_discount(100, 0.2) == 80.0
 ```
 
 **Fix:** Move to unit tests.

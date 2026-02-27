@@ -61,7 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # setup, install, lint, type-check, test, build
+      # Python: setup-python + uv, then: uv sync --frozen, ruff check, mypy, pytest
+      # Node.js: setup-node + npm ci, then: lint, typecheck, test, build
 
   deploy:
     needs: test
@@ -79,10 +80,11 @@ Adapt: add language setup, install steps, platform-specific deploy action.
 | Platform | Choose when |
 |----------|------------|
 | Vercel | Next.js, React, static sites, serverless |
-| Railway | Full-stack apps needing managed DB |
-| Fly.io | Docker containers, global edge |
+| Railway | Full-stack apps needing managed DB (Node.js or Python) |
+| Fly.io | Docker containers (Python, Node.js, Go), global edge |
 | AWS ECS | Enterprise, full infrastructure control |
 | Custom VPS | Persistent sessions, multi-device |
+| PyPI | Python packages or CLI tools |
 | NPM | Node.js packages or CLI tools |
 | Chrome Web Store | Browser extensions |
 

@@ -29,53 +29,48 @@ Tests that fail these purposes are worse than no tests - they provide false conf
 
 Tests that verify nothing:
 
-```typescript
-// BAD - Tests nothing
-test('should exist', () => {
-  expect(true).toBe(true);
-});
+```python
+# BAD - Tests nothing
+def test_should_exist():
+    assert True
 
-// BAD - No assertions
-test('renders component', () => {
-  render(<MyComponent />);
-});
+# BAD - No assertions
+def test_renders_component():
+    render(MyComponent())  # no assertion
 
-// BAD - Only checks function exists
-test('function defined', () => {
-  expect(typeof myFunction).toBe('function');
-});
+# BAD - Only checks callable
+def test_function_defined():
+    assert callable(my_function)  # always True
 ```
 
 ### Category 2: Mock-Only Tests
 
 Tests that only verify mock calls without checking results:
 
-```typescript
-// BAD - Only tests mock was called
-test('calls API', async () => {
-  await fetchUserData(1);
-  expect(api.get).toHaveBeenCalledWith('/users/1');
-  // No assertion on the actual result!
-});
+```python
+# BAD - Only tests mock was called
+async def test_calls_api():
+    await fetch_user_data(1)
+    mock_api.get.assert_called_with('/users/1')
+    # No assertion on the actual result!
 
-// BAD - Mocks everything, tests nothing real
-test('processes data', () => {
-  const mockProcessor = jest.fn().mockReturnValue('result');
-  expect(mockProcessor()).toBe('result'); // Testing the mock!
-});
+# BAD - Mocks everything, tests nothing real
+def test_processes_data():
+    mock_processor = Mock(return_value='result')
+    assert mock_processor() == 'result'  # Testing the mock!
 ```
 
 ### Mock-Return Anti-pattern
 
 Agent mocks a dependency to return a value, then asserts the same value:
 
-```typescript
-// Tests mock wiring, not code behavior
-const mockUser = { id: 1, name: 'Alice' };
-mockUserService.create.mockResolvedValue(mockUser);
-const result = await handler(req, res);
-expect(result).toEqual(mockUser);
-// Litmus test: delete handler implementation → test still passes
+```python
+# Tests mock wiring, not code behavior
+mock_user = {"id": 1, "name": "Alice"}
+mock_user_service.create.return_value = mock_user
+result = await handler(request)
+assert result == mock_user
+# Litmus test: delete handler implementation → test still passes
 ```
 
 ### Category 3: Missing Coverage
@@ -108,15 +103,15 @@ Violations:
 
 When mocking defeats the purpose:
 
-```typescript
-// BAD - Mocks 3+ dependencies
-test('user service', () => {
-  const mockDb = jest.mock('database');
-  const mockCache = jest.mock('cache');
-  const mockEmail = jest.mock('email');
-  const mockLogger = jest.mock('logger');
-  // At this point, what are we even testing?
-});
+```python
+# BAD - Mocks 3+ dependencies
+@patch('src.database.save')
+@patch('src.cache.get')
+@patch('src.email.send')
+@patch('src.logger.info')
+def test_user_service(mock_log, mock_email, mock_cache, mock_db):
+    # At this point, what are we even testing?
+    pass
 ```
 
 **Rule:** If mocking 3+ dependencies, this should be an integration test.
